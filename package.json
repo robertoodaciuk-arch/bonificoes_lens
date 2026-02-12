@@ -16,7 +16,10 @@
     "postinstall": "electron-builder install-app-deps",
     "test:e2e": "node tests/e2e-test.js",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "test": "node --test tests/unit/*.test.js tests/recon/*.test.js && node tests/e2e-test.js",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:recon": "node --test tests/recon/*.test.js"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "^7.0.0-rc.9",
