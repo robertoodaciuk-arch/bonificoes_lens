@@ -27,6 +27,12 @@
     btnPickFile: document.getElementById('btn-pick-file'),
     btnThemeToggle: document.getElementById('btn-theme-toggle'),
     runtimeModeBadge: document.getElementById('runtime-mode-badge'),
+    btnCommandPalette: document.getElementById('btn-command-palette'),
+    commandPalette: document.getElementById('command-palette'),
+    commandBackdrop: document.getElementById('command-backdrop'),
+    commandClose: document.getElementById('command-close'),
+    commandInput: document.getElementById('command-input'),
+    commandList: document.getElementById('command-list'),
     kpiSellers: document.getElementById('kpi-sellers'),
     kpiTotals: document.getElementById('kpi-totals'),
     kpiNan: document.getElementById('kpi-nan'),
@@ -337,6 +343,96 @@
     }
   }
 
+
+  const commandItems = [
+    { id: 'pick-file', label: 'Importar planilha', hint: 'Abrir seletor de arquivo', run: () => pickFileAndLoad() },
+    { id: 'continue', label: 'Continuar para revisão', hint: 'Confirma importação atual', run: () => commitImportAndContinue() },
+    { id: 'clear', label: 'Limpar importação', hint: 'Resetar etapa atual', run: () => reset() },
+    { id: 'contacts', label: 'Abrir contatos', hint: 'Gerenciar contatos de vendedores', run: () => document.getElementById('btn-open-contacts')?.click() },
+    { id: 'theme', label: 'Alternar tema', hint: 'Claro / escuro', run: () => ui.btnThemeToggle?.click() },
+  ];
+
+  function closeCommandPalette() {
+    if (!ui.commandPalette) return;
+    ui.commandPalette.classList.add('hidden');
+    ui.commandPalette.setAttribute('aria-hidden', 'true');
+  }
+
+  function openCommandPalette() {
+    if (!ui.commandPalette) return;
+    ui.commandPalette.classList.remove('hidden');
+    ui.commandPalette.setAttribute('aria-hidden', 'false');
+    renderCommandList('');
+    setTimeout(() => ui.commandInput?.focus(), 0);
+  }
+
+  function renderCommandList(filterText = '') {
+    if (!ui.commandList) return;
+    const term = String(filterText || '').trim().toLowerCase();
+    const list = commandItems.filter((item) => (`${item.label} ${item.hint}`).toLowerCase().includes(term));
+
+    if (!list.length) {
+      ui.commandList.innerHTML = '<div class="command-empty">Nenhum comando encontrado.</div>';
+      return;
+    }
+
+    ui.commandList.innerHTML = list.map((item, idx) => `
+      <button class="command-item ${idx === 0 ? 'is-active' : ''}" data-command-id="${item.id}">
+        <span>${item.label}</span>
+        <small>${item.hint}</small>
+      </button>
+    `).join('');
+  }
+
+  function runCommand(id) {
+    const cmd = commandItems.find((item) => item.id === id);
+    if (!cmd) return;
+    closeCommandPalette();
+    cmd.run();
+  }
+
+  function bindCommandPalette() {
+    if (!ui.commandPalette) return;
+
+    ui.btnCommandPalette?.addEventListener('click', openCommandPalette);
+    ui.commandBackdrop?.addEventListener('click', closeCommandPalette);
+    ui.commandClose?.addEventListener('click', closeCommandPalette);
+
+    ui.commandInput?.addEventListener('input', (e) => {
+      renderCommandList(e.target.value);
+    });
+
+    ui.commandInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeCommandPalette();
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = ui.commandList?.querySelector('.command-item');
+        if (first) runCommand(first.dataset.commandId);
+      }
+    });
+
+    ui.commandList?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.command-item');
+      if (!btn) return;
+      runCommand(btn.dataset.commandId);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const isShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k';
+      if (isShortcut) {
+        e.preventDefault();
+        if (ui.commandPalette.classList.contains('hidden')) openCommandPalette();
+        else closeCommandPalette();
+      } else if (e.key === 'Escape' && !ui.commandPalette.classList.contains('hidden')) {
+        closeCommandPalette();
+      }
+    });
+  }
+
+
   function bindDropzone() {
     if (!ui.dropzone) return;
 
@@ -430,6 +526,7 @@
 
   bindDropzone();
   bindActions();
+  bindCommandPalette();
   setupTheme();
   setupRuntimeModeBadge();
   exposeTestHook();

@@ -17,6 +17,19 @@
     <div class="app-bg-aurora" aria-hidden="true"></div>
     <div class="app-bg-grid" aria-hidden="true"></div>
 
+
+    <div id="command-palette" class="command-palette hidden" aria-hidden="true">
+      <div class="command-backdrop" id="command-backdrop"></div>
+      <section class="command-dialog glass" role="dialog" aria-modal="true" aria-label="Comandos rápidos">
+        <div class="command-head">
+          <span class="command-icon">⌘</span>
+          <input id="command-input" class="command-input" type="text" placeholder="Digite um comando..." autocomplete="off" />
+          <button class="btn btn-icon command-close" id="command-close" aria-label="Fechar comandos">✕</button>
+        </div>
+        <div id="command-list" class="command-list"></div>
+      </section>
+    </div>
+
     <div class="app-shell">
       <header class="app-header glass">
         <div class="brand">
@@ -31,6 +44,7 @@
         </div>
         <div class="header-actions">
           <span id="runtime-mode-badge" class="runtime-mode-badge hidden">MODO TESTE</span>
+          <button class="btn btn-ghost btn-shortcut" id="btn-command-palette" aria-label="Abrir comandos rápidos">Comandos <kbd>Ctrl+K</kbd></button>
           <button class="btn btn-ghost" id="btn-open-contacts">Contatos</button>
           <button class="btn btn-icon" id="btn-theme-toggle" aria-label="Alternar Tema">🌙</button>
         </div>
