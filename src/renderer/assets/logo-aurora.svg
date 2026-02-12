@@ -1,0 +1,26 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="18" y1="14" x2="102" y2="106" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7D8DFF"/>
+      <stop offset="0.5" stop-color="#8A63F8"/>
+      <stop offset="1" stop-color="#59C4FF"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="30" y1="25" x2="94" y2="94" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#DDE5FF" stop-opacity="0.75"/>
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="120" height="120" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="14" y="14" width="92" height="92" rx="26" fill="url(#g1)" filter="url(#glow)"/>
+  <rect x="22" y="22" width="76" height="76" rx="20" fill="#0F1020" fill-opacity="0.18"/>
+
+  <path d="M36 72C36 55.4315 49.4315 42 66 42H84V54H66C56.0589 54 48 62.0589 48 72V76H36V72Z" fill="url(#g2)"/>
+  <path d="M84 48C84 64.5685 70.5685 78 54 78H36V66H54C63.9411 66 72 57.9411 72 48V44H84V48Z" fill="url(#g2)"/>
+</svg>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório</title>
+    <link rel="stylesheet" href="./styles/base.css" />
+    <link rel="stylesheet" href="./styles/components.css" />
+    <link rel="stylesheet" href="./styles/pages/print.css" />
+  </head>
+  <body class="print-body">
+    <div id="report" class="report-root glass">
+      <div class="report-header">
+        <div class="report-brand">
+          <div class="brand-mark"></div>
+          <div>
+            <div class="report-title">Relatório de Bonificação</div>
+            <div class="report-subtitle" id="period">—</div>
+          </div>
+        </div>
+        <div class="report-seller" id="seller">—</div>
+      </div>
+
+      <div class="report-kpis" id="kpis"></div>
+
+      <div class="report-table-wrap">
+        <table class="data-table" id="sales-table"></table>
+      </div>
+
+      <div class="report-footer">
+        Gerado automaticamente • Bonificações WhatsApp
+      </div>
+    </div>
+
+    <script src="./scripts/print.js"></script>
+  </body>
+</html>

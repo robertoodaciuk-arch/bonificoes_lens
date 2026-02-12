@@ -1,0 +1,336 @@
+/* WIZARD & IMPORT STYLES (Ultra Modern) */
+
+/* Dropzone with Scanner Effect */
+.dropzone {
+  position: relative;
+  margin: var(--space-lg) 0;
+  border-radius: var(--radius-xl);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  cursor: pointer;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--accent-primary);
+  background: rgba(102, 126, 234, 0.05);
+  transform: scale(1.01);
+  box-shadow: 0 10px 30px -10px rgba(102, 126, 234, 0.2);
+}
+
+.dropzone.is-busy {
+  pointer-events: none;
+  opacity: 0.86;
+}
+
+.dropzone-scanner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--accent-primary);
+  box-shadow: 0 0 15px var(--accent-primary);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dropzone.scanning .dropzone-scanner {
+  opacity: 1;
+  animation: scan 2s infinite ease-in-out;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  50% { top: 100%; }
+  100% { top: 0; }
+}
+
+.dropzone-inner {
+  text-align: center;
+  z-index: 2;
+}
+
+.drop-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+  transition: transform 0.3s ease;
+}
+
+.dropzone:hover .drop-icon {
+  transform: translateY(-5px) scale(1.1);
+}
+
+.drop-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(to right, #fff, #a0a0b0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.drop-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.drop-file {
+  margin-top: 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+}
+
+.preview-area {
+  padding: 0 var(--space-lg) var(--space-lg);
+}
+
+/* Data Insight Cards */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.insight-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.insight-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.insight-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.insight-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.insight-trend {
+  font-size: 11px;
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trend-up { color: var(--success); }
+.trend-down { color: var(--error); }
+.trend-neutral { color: var(--text-muted); }
+
+/* Modern Table */
+.modern-table-wrap {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-glass);
+  background: var(--bg-secondary);
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.modern-table th {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.modern-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.modern-table tr:last-child td {
+  border-bottom: none;
+}
+
+.modern-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.badge-pill {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.badge-pill.success { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+.badge-pill.warn { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+.badge-pill.error { background: rgba(248, 113, 113, 0.15); color: var(--error); }
+
+/* =========================
+   DASHBOARD UX POLISH
+   ========================= */
+
+/* 1) Entrada em cascata para linhas */
+@keyframes dashRowIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.dash-row {
+  opacity: 0;
+  animation: dashRowIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity, filter;
+}
+
+/* atraso em cascata */
+.dash-row:nth-child(1)  { animation-delay: 0.02s; }
+.dash-row:nth-child(2)  { animation-delay: 0.05s; }
+.dash-row:nth-child(3)  { animation-delay: 0.08s; }
+.dash-row:nth-child(4)  { animation-delay: 0.11s; }
+.dash-row:nth-child(5)  { animation-delay: 0.14s; }
+.dash-row:nth-child(6)  { animation-delay: 0.17s; }
+.dash-row:nth-child(7)  { animation-delay: 0.20s; }
+.dash-row:nth-child(8)  { animation-delay: 0.23s; }
+.dash-row:nth-child(9)  { animation-delay: 0.26s; }
+.dash-row:nth-child(10) { animation-delay: 0.29s; }
+.dash-row:nth-child(11) { animation-delay: 0.32s; }
+.dash-row:nth-child(12) { animation-delay: 0.35s; }
+
+/* 2) Pulso para badge "sending" */
+@keyframes sendingPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.45);
+    transform: translateZ(0);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
+    transform: translateZ(0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+    transform: translateZ(0);
+  }
+}
+
+.badge.sending,
+.status-badge.sending,
+.sending.badge {
+  animation: sendingPulse 1.6s ease-out infinite;
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+/* 3) Donut com tooltip em hover (texto vindo de data-tooltip) */
+
+/* Donut Chart (CSS Only) */
+.donut-chart {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--success) 0% var(--p-sent),
+    var(--error) var(--p-sent) var(--p-error),
+    var(--bg-tertiary) var(--p-error) 100%
+  );
+  position: relative;
+  margin: 0 auto;
+  cursor: help;
+  transition: transform 0.2s ease;
+}
+
+.donut-chart:hover {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.donut-inner {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 800;
+  z-index: 2; /* Ensure above gradient */
+}
+
+/* tooltip bubble */
+.donut-chart[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(6px);
+  background: rgba(15, 15, 26, 0.96);
+  color: var(--text-primary);
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-md);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 10;
+}
+
+.donut-chart[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-row,
+  .badge.sending,
+  .status-badge.sending,
+  .sending.badge {
+    animation: none !important;
+  }
+  .donut-chart {
+    transition: none !important;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}

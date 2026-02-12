@@ -1,0 +1,121 @@
+/* Step 2 Matching */
+.matching-list {
+  padding: 0 var(--space-lg) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.match-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.match-row:hover {
+  transform: translateY(-1px);
+  border-color: rgba(140, 157, 255, 0.42);
+  background: rgba(120, 138, 255, 0.08);
+}
+
+.match-row.unmatched {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.match-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.match-name {
+  font-weight: 600;
+  font-size: var(--font-size-md);
+}
+
+.match-meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.match-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 240px;
+  justify-content: flex-end;
+}
+
+.match-select {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-primary);
+  border: 1px solid var(--border-glass);
+  min-width: 220px;
+  max-width: 320px;
+}
+
+.match-select:focus-visible {
+  outline: 2px solid rgba(102,126,234,0.6);
+  outline-offset: 2px;
+}
+
+.match-status-badge {
+  font-size: var(--font-size-xs);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.match-status-badge.is-muted {
+  opacity: 0.85;
+}
+
+.match-status-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.match-row[data-action='NEW'] {
+  border-color: rgba(96, 165, 250, 0.45);
+}
+
+.match-row[data-action='IGNORE'] {
+  border-color: rgba(251, 191, 36, 0.46);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.match-row[data-action]:not([data-action='IGNORE']) .match-status-note {
+  color: #cfd7ff;
+}
+
+@media (max-width: 860px) {
+  .match-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .match-actions {
+    width: 100%;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .match-select {
+    width: 100%;
+    max-width: none;
+  }
+}

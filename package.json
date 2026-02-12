@@ -1,0 +1,35 @@
+{
+  "name": "commission-whatsapp-automation",
+  "productName": "Bonificações WhatsApp",
+  "version": "0.1.0",
+  "description": "Automação de bonificações: Excel -> relatórios por vendedor -> envio WhatsApp",
+  "main": "src/main/main.js",
+  "author": "Roberto Daciuk",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev": "electron .",
+    "dev:debug": "set ELECTRON_ENABLE_LOGGING=1&& set ELECTRON_ENABLE_STACK_DUMPING=1&& electron .",
+    "start": "electron .",
+    "rebuild:deps": "electron-builder install-app-deps",
+    "rebuild:native": "electron-rebuild -f -w better-sqlite3",
+    "postinstall": "electron-builder install-app-deps",
+    "test:e2e": "node tests/e2e-test.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^7.0.0-rc.9",
+    "better-sqlite3": "^11.8.1",
+    "nanoid": "^5.0.7",
+    "pino": "^10.3.1",
+    "qrcode": "^1.5.4",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.7.0",
+    "electron": "^34.0.0",
+    "electron-builder": "^24.13.3",
+    "playwright": "^1.52.0"
+  }
+}

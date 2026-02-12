@@ -1,0 +1,14 @@
+{
+  "appId": "ai.openclaw.commissions",
+  "productName": "Comissões WhatsApp",
+  "files": [
+    "src/**",
+    "package.json"
+  ],
+  "directories": {
+    "buildResources": "build"
+  },
+  "win": {
+    "target": "nsis"
+  }
+}
