@@ -22,14 +22,13 @@ function showFatal(err) {
 function createWindow() {
   logger.info('Creating main window');
 
-  mainWindow = new BrowserWindow({
+  const windowOptions = {
     width: 1280,
     height: 860,
     minWidth: 900,
     minHeight: 600,
     backgroundColor: '#0f0f1a',
     show: false,
-    frame: false,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
       color: '#0f0f1a',
@@ -42,9 +41,12 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: false,
     },
-  });
+  };
+
+  mainWindow = new BrowserWindow(windowOptions);
 
   mainWindow.once('ready-to-show', () => {
+    logger.info('Window ready-to-show');
     mainWindow.show();
   });
 
@@ -54,8 +56,17 @@ function createWindow() {
   mainWindow.webContents.on('did-fail-load', (e, code, desc, url) => {
     logger.error('did-fail-load', { code, desc, url });
   });
+  mainWindow.webContents.on('did-finish-load', () => {
+    logger.info('Window did-finish-load');
+    if (mainWindow && !mainWindow.isVisible()) {
+      mainWindow.show();
+    }
+  });
 
-  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html')).catch((err) => {
+    logger.error('loadFile failed', { message: err?.message, stack: err?.stack });
+    mainWindow.show();
+  });
 }
 
 function bootstrapDatabase() {
