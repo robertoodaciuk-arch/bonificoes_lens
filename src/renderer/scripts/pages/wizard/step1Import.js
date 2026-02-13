@@ -175,7 +175,7 @@
     const visibleRows = Array.isArray(rows) ? rows.slice(0, 120) : [];
 
     if (!orderedCols.length || !visibleRows.length) {
-      container.innerHTML = '<table class="data-table" id="preview-table"></table><div class="table-empty-state">Sem dados para exibir no preview.</div>';
+      container.innerHTML = '<div class="table-empty-state">Sem dados para exibir no preview.</div>';
       return;
     }
 
