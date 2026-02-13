@@ -29,7 +29,7 @@ function writeLine(line) {
 
 function log(level, message, meta) {
   const line = formatLine(level, message, meta);
-  // keep stdout for dev
+  // mantém stdout para desenvolvimento
   // eslint-disable-next-line no-console
   console.log(line);
   writeLine(line);

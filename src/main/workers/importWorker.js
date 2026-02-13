@@ -3,7 +3,7 @@ const fs = require('fs');
 const xlsx = require('xlsx');
 const path = require('path');
 
-// Worker Logic
+// Lógica do Worker
 try {
   parentPort.on('message', (task) => {
     if (task.type === 'PARSE') {
@@ -13,7 +13,7 @@ try {
       } catch (err) {
         parentPort.postMessage({ type: 'ERROR', error: { message: err.message, stack: err.stack } });
       } finally {
-        // Forced GC attempt if available (Node.js run with --expose-gc)
+        // Tentativa forçada de GC se disponível (Node.js com --expose-gc)
         if (global.gc) {
           global.gc();
         }
@@ -21,7 +21,7 @@ try {
     }
   });
 } catch (err) {
-  console.error('Worker initialization failed', err);
+  console.error('Falha ao inicializar worker', err);
 }
 
 function parseExcel(filePath) {

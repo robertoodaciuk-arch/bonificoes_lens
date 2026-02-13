@@ -24,7 +24,7 @@
   --border-glass: rgba(255, 255, 255, 0.10);
   --border-subtle: rgba(255, 255, 255, 0.05);
 
-  /* Spacing & Layout */
+  /* Espaçamento */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -42,16 +42,19 @@
   --radius-xl: 18px;
   --radius-full: 9999px;
 
-  /* Shadows */
+  /* Sombras */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
   --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
   --shadow-elevated: 0 12px 40px rgba(0,0,0,0.6);
 
-  /* Animations */
+  /* Animações */
   --transition-fast: all 0.15s ease;
   --transition-normal: all 0.3s ease;
   --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Foco acessível */
+  --focus-ring: 0 0 0 3px rgba(102, 126, 234, 0.45);
 }
 
 /* Light Theme Override */
@@ -75,6 +78,8 @@ body.theme-light {
   --shadow-lg: 0 10px 15px rgba(0,0,0,0.05);
   --shadow-elevated: 0 20px 25px rgba(0,0,0,0.05);
   --accent-glow: 0 0 15px rgba(102, 126, 234, 0.2);
+
+  --focus-ring: 0 0 0 3px rgba(102, 126, 234, 0.35);
 }
 
 * { box-sizing: border-box; }
@@ -136,7 +141,7 @@ body.theme-light .app-bg-grid {
   opacity: 0.18;
 }
 
-/* Scrollbar Customization */
+/* Personalização da barra de rolagem */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -155,3 +160,25 @@ body.theme-light .app-bg-grid {
 h1,h2,h3,h4,h5,h6 { margin: 0; font-weight: 600; letter-spacing: -0.02em; }
 button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 .hidden { display: none !important; }
+
+/* Acessibilidade: respeita preferências de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .app-bg-aurora { animation: none !important; }
+}
+
+/* Acessibilidade: anel de foco visível para navegação por teclado */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Seleção de texto estilizada */
+::selection {
+  background: rgba(102, 126, 234, 0.35);
+  color: var(--text-primary);
+}
