@@ -58,14 +58,16 @@ function createWindow() {
   });
   mainWindow.webContents.on('did-finish-load', () => {
     logger.info('Window did-finish-load');
-    if (mainWindow && !mainWindow.isVisible()) {
+    if (!mainWindow.isDestroyed() && !mainWindow.isVisible()) {
       mainWindow.show();
     }
   });
 
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html')).catch((err) => {
     logger.error('loadFile failed', { message: err?.message, stack: err?.stack });
-    mainWindow.show();
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.show();
+    }
   });
 }
 
