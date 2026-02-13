@@ -179,8 +179,11 @@
                     </div>
                   </div>
 
-                  <div class="pane-title" style="margin-top: 18px;">📋 Preview de dados</div>
-                  <div class="table-wrap glass">
+                  <div class="preview-table-header" style="margin-top: 18px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                    <div class="pane-title" style="margin:0;">📋 Preview de dados</div>
+                    <input type="text" id="preview-search" class="input-field" placeholder="🔍 Filtrar dados…" style="max-width:260px; margin:0; font-size:12px; padding:6px 10px;" />
+                  </div>
+                  <div class="table-wrap glass" id="preview-table-wrap">
                     <table class="data-table" id="preview-table"></table>
                   </div>
                 </div>
@@ -443,6 +446,9 @@
                 <div class="card-footer">
                   <div class="footer-left">Use essa visão para agir rápido nos não enviados.</div>
                   <div class="footer-right">
+                    <button class="btn btn-ghost" id="btn-export-dashboard" title="Exportar resultados como texto">
+                      <span class="btn-icon-inline">📋</span> Exportar
+                    </button>
                     <button class="btn btn-secondary" id="btn-back-step5">
                       <span class="btn-icon-inline">←</span> Voltar
                     </button>

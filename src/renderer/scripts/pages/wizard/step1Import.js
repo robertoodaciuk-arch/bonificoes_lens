@@ -168,8 +168,7 @@
   }
 
   function renderPreviewTable(columns = [], rows = []) {
-    // Use a stable container selector that won't be destroyed on re-render
-    const container = document.querySelector('.table-wrap.glass');
+    const container = document.getElementById('preview-table-wrap');
     if (!container) return;
 
     const orderedCols = getOrderedColumns(columns);
@@ -213,12 +212,30 @@
         </tbody>
       </table>
     `;
+
+    // Bind search/filter
+    bindPreviewSearch();
+  }
+
+  function bindPreviewSearch() {
+    const searchInput = document.getElementById('preview-search');
+    const tableEl = document.getElementById('preview-table');
+    if (!searchInput || !tableEl) return;
+
+    searchInput.oninput = () => {
+      const term = searchInput.value.trim().toLowerCase();
+      const rows = tableEl.querySelectorAll('tbody tr');
+      rows.forEach((row) => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = !term || text.includes(term) ? '' : 'none';
+      });
+    };
   }
 
   function renderSkeleton() {
     const warningsEl = document.getElementById('warnings');
     const sellersEl = document.getElementById('seller-list');
-    const tableContainer = document.querySelector('.table-wrap.glass');
+    const tableContainer = document.getElementById('preview-table-wrap');
 
     if (warningsEl) {
       warningsEl.innerHTML = `
