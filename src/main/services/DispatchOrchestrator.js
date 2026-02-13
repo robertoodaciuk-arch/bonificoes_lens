@@ -24,7 +24,7 @@ class DispatchOrchestrator {
       maxDelay: 15000,
       retryLimit: 3,
       output: { pdf: true, png: false },
-      messageTemplate: 'Olá {vendedor}, segue seu relatório de bonificações do período {periodo}.',
+      messageTemplate: '{Oi|Olá|Oii|Oi, tudo bem?} {vendedor}, {segue seu relatório de bonificações|aqui está o relatório de bonificações|te envio o relatório de bonificações} do período {periodo}.',
     };
     this.timeoutId = null;
     this.running = false;
@@ -47,7 +47,7 @@ class DispatchOrchestrator {
         png: !!output.png,
       },
       messageTemplate: String(config.messageTemplate || '').trim() ||
-        'Olá {vendedor}, segue seu relatório de bonificações do período {periodo}.',
+        '{Oi|Olá|Oii|Oi, tudo bem?} {vendedor}, {segue seu relatório de bonificações|aqui está o relatório de bonificações|te envio o relatório de bonificações} do período {periodo}.',
     };
 
     if (!normalized.output.pdf && !normalized.output.png) {
@@ -66,7 +66,7 @@ class DispatchOrchestrator {
       maxDelay: 15000,
       retryLimit: 3,
       output: { pdf: true, png: false },
-      messageTemplate: 'Olá {vendedor}, segue seu relatório de bonificações do período {periodo}.',
+      messageTemplate: '{Oi|Olá|Oii|Oi, tudo bem?} {vendedor}, {segue seu relatório de bonificações|aqui está o relatório de bonificações|te envio o relatório de bonificações} do período {periodo}.',
       ...config
     });
 

@@ -17,6 +17,15 @@
     if (window.setSidebarActive && sidebarMap[idx]) window.setSidebarActive(sidebarMap[idx]);
   }
 
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function safeBaseName(filePath) {
     if (!filePath) return 'Não gerado';
     const parts = String(filePath).split(/[/\\]/);
@@ -43,7 +52,7 @@
     }
 
     if (state === 'error') {
-      const msg = payload?.message || 'Falha ao gerar preview.';
+      const msg = escapeHtml(payload?.message || 'Falha ao gerar preview.');
       previewInfo.innerHTML = `
         <div class="preview-state preview-state--error">
           <div>
@@ -57,30 +66,40 @@
 
     if (state === 'success') {
       const artifacts = payload?.artifacts || {};
-      const pdf = safeBaseName(artifacts.pdfPath);
-      const png = safeBaseName(artifacts.pngPath);
+      const pdf = escapeHtml(safeBaseName(artifacts.pdfPath));
+      const png = escapeHtml(safeBaseName(artifacts.pngPath));
+
+      const pdfCard = artifacts.pdfPath ? `
+        <article class="preview-artifact-card">
+          <div class="preview-artifact-icon">PDF</div>
+          <div class="preview-artifact-meta">
+            <b>Relatório PDF</b>
+            <p title="${pdf}">${pdf}</p>
+          </div>
+        </article>` : '';
+
+      const pngCard = artifacts.pngPath ? `
+        <article class="preview-artifact-card">
+          <div class="preview-artifact-icon preview-artifact-icon--img">PNG</div>
+          <div class="preview-artifact-meta">
+            <b>Imagem PNG</b>
+            <p title="${png}">${png}</p>
+          </div>
+        </article>` : '';
+
+      const noArtifacts = !artifacts.pdfPath && !artifacts.pngPath
+        ? '<p>Nenhum artefato gerado.</p>' : '';
 
       previewInfo.innerHTML = `
         <div class="preview-state preview-state--success">
           <div class="preview-state-head">
-            <strong>Preview gerado com sucesso</strong>
+            <strong>✅ Preview gerado com sucesso</strong>
             <span>Valide os arquivos antes de seguir para envio.</span>
           </div>
           <div class="preview-artifacts-grid">
-            <article class="preview-artifact-card">
-              <div class="preview-artifact-icon">PDF</div>
-              <div class="preview-artifact-meta">
-                <b>Relatório PDF</b>
-                <p title="${pdf}">${pdf}</p>
-              </div>
-            </article>
-            <article class="preview-artifact-card">
-              <div class="preview-artifact-icon preview-artifact-icon--img">PNG</div>
-              <div class="preview-artifact-meta">
-                <b>Imagem PNG</b>
-                <p title="${png}">${png}</p>
-              </div>
-            </article>
+            ${pdfCard}
+            ${pngCard}
+            ${noArtifacts}
           </div>
         </div>
       `;

@@ -6,6 +6,7 @@
 
   const btnBack = document.getElementById('btn-back-step5');
   const btnRefresh = document.getElementById('btn-refresh-dashboard');
+  const btnExport = document.getElementById('btn-export-dashboard');
 
   const kpiSent = document.getElementById('dash-kpi-sent');
   const kpiUnsent = document.getElementById('dash-kpi-unsent');
@@ -117,6 +118,42 @@
     tableEl.innerHTML = `${head}<tbody>${rows}</tbody>`;
   }
 
+  function exportDashboard() {
+    if (!tableEl) return;
+
+    const rows = tableEl.querySelectorAll('tbody tr');
+    if (!rows.length) {
+      showToast('warn', 'Nenhum dado para exportar.');
+      return;
+    }
+
+    const lines = ['Contato\tTelefone\tVendedor\tStatus\tDetalhe'];
+    rows.forEach((tr) => {
+      const cells = tr.querySelectorAll('td');
+      if (cells.length >= 5) {
+        lines.push([
+          cells[0]?.textContent?.trim() || '',
+          cells[1]?.textContent?.trim() || '',
+          cells[2]?.textContent?.trim() || '',
+          cells[3]?.textContent?.trim() || '',
+          cells[4]?.textContent?.trim() || '',
+        ].join('\t'));
+      }
+    });
+
+    const text = lines.join('\n');
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('success', 'Dados copiados para a área de transferência!');
+      }).catch(() => {
+        showToast('error', 'Falha ao copiar dados.');
+      });
+    } else {
+      showToast('warn', 'Clipboard não disponível.');
+    }
+  }
+
   async function refresh() {
     try {
       const state = window.wizardState || {};
@@ -151,7 +188,7 @@
   function startAutoRefresh() {
     stopAutoRefresh();
     refresh();
-    intervalId = setInterval(refresh, 3000);
+    intervalId = setInterval(refresh, 5000);
   }
 
   function stopAutoRefresh() {
@@ -186,6 +223,7 @@
   });
 
   btnRefresh?.addEventListener('click', refresh);
+  btnExport?.addEventListener('click', exportDashboard);
 
   window.wizardStep6 = {
     show,

@@ -16,6 +16,62 @@
 
   const btnBack = document.getElementById('btn-back-step2');
   const btnNext = document.getElementById('btn-next-step4');
+  const previewSamples = document.getElementById('message-preview-samples');
+
+  function processSpintext(text) {
+    if (!text) return '';
+    return text.replace(/\{([^{}]+)\}/g, (match, content) => {
+      if (content.includes('|')) {
+        const choices = content.split('|');
+        return choices[Math.floor(Math.random() * choices.length)];
+      }
+      return match;
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function generateMessagePreviews() {
+    if (!previewSamples) return;
+
+    const template = String(msgTemplate?.value || '').trim();
+    if (!template) {
+      previewSamples.innerHTML = '<div class="message-sample-empty">Digite uma mensagem acima para ver exemplos.</div>';
+      return;
+    }
+
+    const samples = [];
+    for (let i = 0; i < 4; i++) {
+      let msg = processSpintext(template);
+      msg = msg.replace(/\{vendedor\}/gi, 'João Silva');
+      msg = msg.replace(/\{periodo\}/gi, '2026-02');
+      samples.push(msg);
+    }
+
+    const html = samples.map((sample, idx) => `
+      <div class="message-sample">
+        <span class="message-sample-num">#${idx + 1}</span>
+        <span class="message-sample-text">${escapeHtml(sample)}</span>
+      </div>
+    `).join('');
+
+    previewSamples.innerHTML = html;
+  }
+
+  // Generate previews on typing (debounced)
+  let previewTimeout = null;
+  if (msgTemplate) {
+    msgTemplate.addEventListener('input', () => {
+      clearTimeout(previewTimeout);
+      previewTimeout = setTimeout(generateMessagePreviews, 300);
+    });
+  }
 
   function getConfig() {
     return {
@@ -24,7 +80,7 @@
         png: !!fmtPng?.checked,
       },
       mode: 'PROD',
-      messageTemplate: String(msgTemplate?.value || '').trim() || 'Olá {vendedor}, segue seu relatório de bonificações do período {periodo}.',
+      messageTemplate: String(msgTemplate?.value || '').trim() || '{Oi|Olá|Oii} {vendedor}, segue seu relatório de bonificações do período {periodo}.',
       antiBan: {
         minDelaySec: Number(delayMin?.value || 8),
         maxDelaySec: Number(delayMax?.value || 15),
@@ -57,6 +113,7 @@
     document.getElementById('step6-content')?.classList.add('hidden');
     step3Content.classList.remove('hidden');
     setWizardStepActive(2);
+    generateMessagePreviews();
   }
 
   async function goNext() {

@@ -129,7 +129,7 @@
   function startStatusPolling() {
     stopStatusPolling();
     refreshStatus();
-    statusPollTimer = setInterval(refreshStatus, 1200);
+    statusPollTimer = setInterval(refreshStatus, 2000);
   }
 
   function stopStatusPolling() {

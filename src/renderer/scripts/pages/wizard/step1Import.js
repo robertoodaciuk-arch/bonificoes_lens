@@ -168,7 +168,7 @@
   }
 
   function renderPreviewTable(columns = [], rows = []) {
-    const container = document.getElementById('preview-table')?.parentElement;
+    const container = document.getElementById('preview-table-wrap');
     if (!container) return;
 
     const orderedCols = getOrderedColumns(columns);
@@ -200,7 +200,7 @@
     container.classList.add('modern-table-wrap');
     container.innerHTML = `
       ${previewInfo}
-      <table class="modern-table animate-in">
+      <table class="modern-table animate-in" id="preview-table">
         <thead>
           <tr>
             <th>#</th>
@@ -212,12 +212,30 @@
         </tbody>
       </table>
     `;
+
+    // Bind search/filter
+    bindPreviewSearch();
+  }
+
+  function bindPreviewSearch() {
+    const searchInput = document.getElementById('preview-search');
+    const tableEl = document.getElementById('preview-table');
+    if (!searchInput || !tableEl) return;
+
+    searchInput.oninput = () => {
+      const term = searchInput.value.trim().toLowerCase();
+      const rows = tableEl.querySelectorAll('tbody tr');
+      rows.forEach((row) => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = !term || text.includes(term) ? '' : 'none';
+      });
+    };
   }
 
   function renderSkeleton() {
     const warningsEl = document.getElementById('warnings');
     const sellersEl = document.getElementById('seller-list');
-    const tableContainer = document.getElementById('preview-table')?.parentElement;
+    const tableContainer = document.getElementById('preview-table-wrap');
 
     if (warningsEl) {
       warningsEl.innerHTML = `

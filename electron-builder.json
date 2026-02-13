@@ -9,6 +9,10 @@
     "buildResources": "build",
     "output": "dist"
   },
+  "asar": true,
+  "asarUnpack": [
+    "node_modules/better-sqlite3/**"
+  ],
   "win": {
     "target": [
       {
@@ -31,9 +35,15 @@
     "installerSidebar": null,
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "shortcutName": "Bonificações WhatsApp"
+    "shortcutName": "Bonificações WhatsApp",
+    "include": null,
+    "perMachine": false,
+    "allowElevation": true,
+    "runAfterFinish": true
   },
   "portable": {
     "artifactName": "${productName}-${version}-Portatil.${ext}"
-  }
+  },
+  "extraResources": [],
+  "npmRebuild": true
 }
