@@ -23,16 +23,29 @@ function createWindow() {
   logger.info('Creating main window');
 
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 1280,
+    height: 860,
+    minWidth: 900,
+    minHeight: 600,
     backgroundColor: '#0f0f1a',
-    show: true,
+    show: false,
+    frame: false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#0f0f1a',
+      symbolColor: '#a0a0b0',
+      height: 36,
+    },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
     },
+  });
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
 
   mainWindow.webContents.on('render-process-gone', (e, details) => {

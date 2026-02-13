@@ -411,6 +411,7 @@
     btnBack.addEventListener('click', () => {
       section.classList.add('hidden');
       document.getElementById('wizard-section').classList.remove('hidden');
+      if (window.setSidebarActive) window.setSidebarActive('step1');
     });
   }
 
@@ -436,6 +437,7 @@
     show: () => {
       document.getElementById('wizard-section').classList.add('hidden');
       section.classList.remove('hidden');
+      if (window.setSidebarActive) window.setSidebarActive('contacts');
       resetImport();
       loadContacts();
     }
