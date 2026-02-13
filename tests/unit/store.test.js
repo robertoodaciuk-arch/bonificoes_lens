@@ -21,17 +21,20 @@ test('Store.set atualiza estado parcialmente', () => {
   assert.deepEqual(store.getEstado(), { a: 1, b: 99 });
 });
 
-test('Store.set notifica listeners', () => {
+test('Store.set notifica listeners com cópia do estado', () => {
   const store = new Store({ x: 0 });
   let novoEstado = null;
   let estadoAnterior = null;
   store.onChange((novo, anterior) => {
-    novoEstado = { ...novo };
-    estadoAnterior = { ...anterior };
+    novoEstado = novo;
+    estadoAnterior = anterior;
+    // Tentar mutar a cópia recebida não deve afetar o store
+    novo.x = 999;
   });
   store.set({ x: 42 });
-  assert.deepEqual(novoEstado, { x: 42 });
+  assert.deepEqual(novoEstado, { x: 999 }); // listener mutou sua cópia
   assert.deepEqual(estadoAnterior, { x: 0 });
+  assert.equal(store.get('x'), 42); // store não foi afetado
 });
 
 test('Store.onChange retorna função de desregistro', () => {
@@ -43,10 +46,12 @@ test('Store.onChange retorna função de desregistro', () => {
   assert.equal(chamado, false);
 });
 
-test('Store.reset substitui estado', () => {
+test('Store.reset substitui estado completamente', () => {
   const store = new Store({ a: 1, b: 2 });
   store.reset({ c: 3 });
   assert.equal(store.get('c'), 3);
+  assert.equal(store.get('a'), undefined);
+  assert.equal(store.get('b'), undefined);
 });
 
 test('Store getEstado retorna cópia rasa (não mesma referência)', () => {

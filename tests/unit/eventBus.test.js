@@ -39,6 +39,18 @@ test('EventBus.off remove listener específico', () => {
   assert.equal(chamado, false);
 });
 
+test('EventBus.off remove apenas o listener específico', () => {
+  const bus = new EventBus();
+  const resultados = [];
+  const cb1 = () => resultados.push('cb1');
+  const cb2 = () => resultados.push('cb2');
+  bus.on('evento', cb1);
+  bus.on('evento', cb2);
+  bus.off('evento', cb1);
+  bus.emit('evento');
+  assert.deepEqual(resultados, ['cb2']);
+});
+
 test('EventBus não falha ao emitir evento sem listeners', () => {
   const bus = new EventBus();
   assert.doesNotThrow(() => bus.emit('inexistente', {}));

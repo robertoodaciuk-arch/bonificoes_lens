@@ -24,16 +24,24 @@ class Store {
     Object.assign(this._estado, parcial);
     for (const cb of this._listeners) {
       try {
-        cb(this._estado, anterior);
+        cb({ ...this._estado }, anterior);
       } catch {
         // evita que erro de listener quebre o fluxo
       }
     }
   }
 
-  /** Reseta estado para valor inicial */
+  /** Reseta estado completamente para valor fornecido */
   reset(estadoInicial = {}) {
-    this.set(estadoInicial);
+    const anterior = { ...this._estado };
+    this._estado = { ...estadoInicial };
+    for (const cb of this._listeners) {
+      try {
+        cb({ ...this._estado }, anterior);
+      } catch {
+        // evita que erro de listener quebre o fluxo
+      }
+    }
   }
 
   /** Registra listener de mudança, retorna função de desregistro */

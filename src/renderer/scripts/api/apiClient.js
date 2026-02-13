@@ -28,7 +28,7 @@ async function executar(nome, chamada) {
     console.error(`[API] Erro em ${nome} (${duracao}ms):`, err);
     const mensagem = err?.message || 'Erro desconhecido';
     if (typeof window !== 'undefined' && window.uiToast) {
-      window.uiToast.showToast(`Erro: ${mensagem}`, 'error');
+      window.uiToast.showToast(mensagem, 'error');
     }
     return { ok: false, erro: mensagem, duracaoMs: duracao };
   }
