@@ -151,7 +151,7 @@
   function startAutoRefresh() {
     stopAutoRefresh();
     refresh();
-    intervalId = setInterval(refresh, 3000);
+    intervalId = setInterval(refresh, 5000);
   }
 
   function stopAutoRefresh() {

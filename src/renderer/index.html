@@ -104,6 +104,9 @@
             <div class="topbar-wa-status" id="topbar-wa-status" title="Status WhatsApp">
               <span class="wa-dot" id="wa-dot"></span>
               <span class="wa-label" id="wa-label">Desconectado</span>
+              <button class="btn-wa-toggle" id="btn-wa-toggle" title="Conectar / Desconectar WhatsApp">
+                <span id="wa-toggle-icon">📱</span>
+              </button>
             </div>
           </div>
         </header>
@@ -249,8 +252,16 @@
 
                   <div class="pane">
                     <div class="pane-title">💬 Mensagem</div>
-                    <textarea id="cfg-message-template" class="input-field wizard-textarea">Olá {vendedor}, segue seu relatório de bonificações do período {periodo}.</textarea>
-                    <div class="wizard-help">Variáveis disponíveis: <code>{vendedor}</code>, <code>{periodo}</code></div>
+                    <textarea id="cfg-message-template" class="input-field wizard-textarea">{Oi|Olá|Oii|Oi, tudo bem?} {vendedor}, {segue seu relatório de bonificações|aqui está o relatório de bonificações|te envio o relatório de bonificações} do período {periodo}.</textarea>
+                    <div class="wizard-help">
+                      Variáveis: <code>{vendedor}</code>, <code>{periodo}</code><br>
+                      Variação: Use <code>{opção1|opção2|opção3}</code> para variar mensagens automaticamente.<br>
+                      Exemplo: <code>{Oi|Olá|Oii}</code> escolhe aleatoriamente entre as opções.
+                    </div>
+                    <div class="message-preview-box" id="message-preview-box">
+                      <div class="pane-title" style="margin-top:10px;">👁️ Exemplos de mensagem</div>
+                      <div id="message-preview-samples" class="message-preview-samples"></div>
+                    </div>
                   </div>
 
                   <div class="pane">
@@ -339,6 +350,9 @@
                       <div class="wizard-info-text state-text">Status: <strong id="wa-status">—</strong></div>
                       <button class="btn btn-secondary" id="btn-wa-connect">
                         <span class="btn-icon-inline">📱</span> Conectar (QR)
+                      </button>
+                      <button class="btn btn-ghost" id="btn-wa-disconnect">
+                        <span class="btn-icon-inline">🔌</span> Desconectar
                       </button>
                     </div>
                     <img id="wa-qr-img" class="wizard-qr hidden" alt="QR Code WhatsApp" />

@@ -168,14 +168,15 @@
   }
 
   function renderPreviewTable(columns = [], rows = []) {
-    const container = document.getElementById('preview-table')?.parentElement;
+    // Use a stable container selector that won't be destroyed on re-render
+    const container = document.querySelector('.table-wrap.glass');
     if (!container) return;
 
     const orderedCols = getOrderedColumns(columns);
     const visibleRows = Array.isArray(rows) ? rows.slice(0, 120) : [];
 
     if (!orderedCols.length || !visibleRows.length) {
-      container.innerHTML = '<div class="table-empty-state">Sem dados para exibir no preview.</div>';
+      container.innerHTML = '<table class="data-table" id="preview-table"></table><div class="table-empty-state">Sem dados para exibir no preview.</div>';
       return;
     }
 
@@ -200,7 +201,7 @@
     container.classList.add('modern-table-wrap');
     container.innerHTML = `
       ${previewInfo}
-      <table class="modern-table animate-in">
+      <table class="modern-table animate-in" id="preview-table">
         <thead>
           <tr>
             <th>#</th>
@@ -217,7 +218,7 @@
   function renderSkeleton() {
     const warningsEl = document.getElementById('warnings');
     const sellersEl = document.getElementById('seller-list');
-    const tableContainer = document.getElementById('preview-table')?.parentElement;
+    const tableContainer = document.querySelector('.table-wrap.glass');
 
     if (warningsEl) {
       warningsEl.innerHTML = `

@@ -267,6 +267,39 @@
   box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
 }
 
+.btn-wa-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  padding: 0;
+  margin-left: 4px;
+}
+
+.btn-wa-toggle:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.4);
+  transform: scale(1.05);
+}
+
+.btn-wa-toggle.is-connected {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.btn-wa-toggle.is-connected:hover {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
 /* ═══ MAIN CONTENT ═══ */
 .app-main {
   flex: 1;
@@ -419,5 +452,74 @@
   }
   .app-main {
     padding: 0 14px 0;
+  }
+  .topbar-wa-status {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  .wa-label {
+    display: none;
+  }
+  .app-topbar {
+    padding: 10px 14px;
+    min-height: 50px;
+  }
+  .topbar-title {
+    font-size: 15px;
+  }
+  .card-header {
+    padding: var(--space-md);
+  }
+  .card-footer {
+    padding: var(--space-md);
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  .footer-right {
+    width: 100%;
+  }
+  .footer-right .btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-shell {
+    grid-template-columns: 48px 1fr;
+  }
+  .sidebar-icon {
+    font-size: 14px;
+    width: 18px;
+  }
+  .sidebar-item {
+    padding: 8px;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+  }
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+  }
+  .app-main {
+    padding: 0 8px 0;
+  }
+  .wizard-step-body {
+    padding: var(--space-md);
+  }
+}
+
+@media (min-width: 1600px) {
+  .wizard {
+    max-width: 1400px;
+  }
+  .table-wrap,
+  .modern-table-wrap {
+    max-height: 480px;
+  }
+  .warnings,
+  .seller-list {
+    max-height: 300px;
   }
 }
