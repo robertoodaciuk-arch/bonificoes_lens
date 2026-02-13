@@ -182,3 +182,47 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
   background: rgba(102, 126, 234, 0.35);
   color: var(--text-primary);
 }
+
+/* Performance: contain para isolamento de layout */
+.app-sidebar {
+  contain: layout style;
+}
+
+.app-main {
+  contain: layout;
+}
+
+.wizard > .card {
+  contain: layout style;
+}
+
+.modal-overlay {
+  contain: layout style paint;
+}
+
+/* Performance: will-change para elementos animados */
+.sidebar-item {
+  will-change: transform, background-color;
+}
+
+.btn-primary {
+  will-change: transform, box-shadow;
+}
+
+.dropzone {
+  will-change: transform, border-color;
+}
+
+/* Performance: GPU acceleration para animações */
+.app-bg-aurora {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.kpi-animate {
+  will-change: transform, opacity;
+}
+
+.animate-card-in {
+  will-change: transform, opacity;
+}
