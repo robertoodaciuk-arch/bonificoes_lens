@@ -96,8 +96,8 @@
 }
 
 .btn:focus-visible {
-  outline: 2px solid rgba(102,126,234,0.6);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .btn-icon {
@@ -123,8 +123,8 @@
 }
 
 .btn-icon:focus-visible {
-  outline: 2px solid rgba(102,126,234,0.6);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .btn-icon.btn-danger {
@@ -145,7 +145,7 @@
 .input-field:focus {
   outline: none;
   border-color: rgba(102,126,234,0.7);
-  box-shadow: 0 0 0 3px rgba(102,126,234,0.16);
+  box-shadow: var(--focus-ring);
 }
 
 .input-label {

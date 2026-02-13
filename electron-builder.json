@@ -1,14 +1,39 @@
 {
   "appId": "ai.openclaw.commissions",
-  "productName": "Comissões WhatsApp",
+  "productName": "Bonificações WhatsApp",
   "files": [
     "src/**",
     "package.json"
   ],
   "directories": {
-    "buildResources": "build"
+    "buildResources": "build",
+    "output": "dist"
   },
   "win": {
-    "target": "nsis"
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "build/icon.ico",
+    "artifactName": "${productName}-${version}-${arch}.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "installerLanguages": ["pt_BR"],
+    "language": "1046",
+    "installerSidebar": null,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Bonificações WhatsApp"
+  },
+  "portable": {
+    "artifactName": "${productName}-${version}-Portatil.${ext}"
   }
 }

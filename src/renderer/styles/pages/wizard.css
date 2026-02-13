@@ -1,6 +1,6 @@
-/* WIZARD & IMPORT STYLES (Ultra Modern) */
+/* WIZARD & ESTILOS DE IMPORTAÇÃO (Ultra Moderno) */
 
-/* Dropzone with Scanner Effect */
+/* Dropzone com efeito de scanner */
 .dropzone {
   position: relative;
   margin: var(--space-lg) 0;
@@ -57,10 +57,15 @@
 }
 
 .drop-icon {
-  font-size: 48px;
   margin-bottom: 16px;
   filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
   transition: transform 0.3s ease;
+  color: var(--accent-primary);
+}
+
+.drop-icon svg {
+  width: 48px;
+  height: 48px;
 }
 
 .dropzone:hover .drop-icon {
@@ -91,7 +96,7 @@
   padding: 0 var(--space-lg) var(--space-lg);
 }
 
-/* Data Insight Cards */
+/* Cartões de Insight de Dados */
 .insight-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -141,7 +146,7 @@
 .trend-down { color: var(--error); }
 .trend-neutral { color: var(--text-muted); }
 
-/* Modern Table */
+/* Tabela Moderna */
 .modern-table-wrap {
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -254,7 +259,7 @@
 
 /* 3) Donut com tooltip em hover (texto vindo de data-tooltip) */
 
-/* Donut Chart (CSS Only) */
+/* Gráfico Donut (CSS Puro) */
 .donut-chart {
   width: 120px;
   height: 120px;
@@ -283,7 +288,7 @@
   place-items: center;
   font-size: 20px;
   font-weight: 800;
-  z-index: 2; /* Ensure above gradient */
+  z-index: 2; /* Garantir acima do gradiente */
 }
 
 /* tooltip bubble */
@@ -325,7 +330,7 @@
   }
 }
 
-/* Animations */
+/* Animações */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

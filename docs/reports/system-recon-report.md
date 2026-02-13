@@ -1,7 +1,7 @@
 # Reconhecimento Técnico — Operação Apple Transformation
 
 ## Resumo
-- Arquivos analisados (sem node_modules/.git): 69
+- Arquivos analisados (sem node_modules/.git): 76
 - Produto: Bonificações WhatsApp
 - Versão: 0.1.0
 
@@ -13,7 +13,7 @@
 - Automação WhatsApp: @whiskeysockets/baileys
 
 ## Distribuição por extensão
-- .js: 46
+- .js: 53
 - .css: 8
 - .md: 4
 - .json: 3

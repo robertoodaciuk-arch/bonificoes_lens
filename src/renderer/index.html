@@ -17,7 +17,6 @@
     <div class="app-bg-aurora" aria-hidden="true"></div>
     <div class="app-bg-grid" aria-hidden="true"></div>
 
-
     <div id="command-palette" class="command-palette hidden" aria-hidden="true">
       <div class="command-backdrop" id="command-backdrop"></div>
       <section class="command-dialog glass" role="dialog" aria-modal="true" aria-label="Comandos rápidos">
@@ -30,376 +29,520 @@
       </section>
     </div>
 
-    <div class="app-shell">
-      <header class="app-header glass">
-        <div class="brand">
+    <div class="app-shell" role="application" aria-label="Bonificações WhatsApp">
+
+      <!-- ═══ SIDEBAR NAVIGATION ═══ -->
+      <aside class="app-sidebar glass" role="navigation" aria-label="Menu principal">
+        <div class="sidebar-brand">
           <div class="brand-mark" aria-hidden="true">
             <img src="./assets/logo-aurora.svg" alt="" class="brand-logo" />
           </div>
-          <div class="brand-text">
-            <div class="brand-title">Bonificações WhatsApp</div>
-            <div class="brand-subtitle">Excel → Relatórios → WhatsApp</div>
+          <div class="sidebar-brand-text">
+            <span class="sidebar-brand-name">Bonificações</span>
+            <span class="sidebar-brand-sub">WhatsApp Sender</span>
           </div>
-          <span class="brand-pill">Phoenix UI v4</span>
         </div>
-        <div class="header-actions">
-          <span id="runtime-mode-badge" class="runtime-mode-badge hidden">MODO TESTE</span>
-          <button class="btn btn-ghost btn-shortcut" id="btn-command-palette" aria-label="Abrir comandos rápidos">Comandos <kbd>Ctrl+K</kbd></button>
-          <button class="btn btn-ghost" id="btn-open-contacts">Contatos</button>
-          <button class="btn btn-icon" id="btn-theme-toggle" aria-label="Alternar Tema">🌙</button>
-        </div>
-      </header>
 
-      <main class="app-main">
-        <!-- WIZARD SECTION -->
-        <section id="wizard-section" class="wizard">
-          <div class="wizard-steps">
-            <div class="step active">1. Importar & Preview</div>
-            <div class="step" id="step-match">2. Revisão</div>
-            <div class="step">3. Configurar</div>
-            <div class="step">4. Preview</div>
-            <div class="step">5. Enviar</div>
-            <div class="step">6. Dashboard</div>
+        <nav class="sidebar-nav">
+          <div class="sidebar-section-label">Wizard de Envio</div>
+          <button class="sidebar-item active" data-nav="step1" title="Importar planilha Excel">
+            <span class="sidebar-icon">📥</span>
+            <span class="sidebar-label">Importar</span>
+            <span class="sidebar-badge" id="nav-badge-step1"></span>
+          </button>
+          <button class="sidebar-item" data-nav="step2" id="step-match" title="Revisão e associação de vendedores">
+            <span class="sidebar-icon">🔍</span>
+            <span class="sidebar-label">Revisão</span>
+            <span class="sidebar-badge" id="nav-badge-step2"></span>
+          </button>
+          <button class="sidebar-item" data-nav="step3" title="Configurar formato e parâmetros">
+            <span class="sidebar-icon">⚙️</span>
+            <span class="sidebar-label">Configurar</span>
+          </button>
+          <button class="sidebar-item" data-nav="step4" title="Gerar preview do relatório">
+            <span class="sidebar-icon">👁️</span>
+            <span class="sidebar-label">Preview</span>
+          </button>
+          <button class="sidebar-item" data-nav="step5" title="Executar envios via WhatsApp">
+            <span class="sidebar-icon">🚀</span>
+            <span class="sidebar-label">Enviar</span>
+          </button>
+          <button class="sidebar-item" data-nav="step6" title="Dashboard com resultados dos envios">
+            <span class="sidebar-icon">📊</span>
+            <span class="sidebar-label">Dashboard</span>
+          </button>
+
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-section-label">Ferramentas</div>
+          <button class="sidebar-item" id="btn-open-contacts" data-nav="contacts" title="Gerenciar contatos de vendedores">
+            <span class="sidebar-icon">👥</span>
+            <span class="sidebar-label">Contatos</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="sidebar-footer-btn" id="btn-theme-toggle" aria-label="Alternar Tema" title="Alternar claro/escuro">
+            <span class="sidebar-icon">🌙</span>
+            <span class="sidebar-label">Tema</span>
+          </button>
+          <button class="sidebar-footer-btn" id="btn-command-palette" aria-label="Abrir comandos rápidos" title="Ctrl+K">
+            <span class="sidebar-icon">⌘</span>
+            <span class="sidebar-label">Atalhos</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- ═══ MAIN CONTENT ═══ -->
+      <div class="app-content">
+        <header class="app-topbar">
+          <div class="topbar-left">
+            <h1 class="topbar-title" id="topbar-title">Importar Planilha</h1>
+            <span class="topbar-subtitle" id="topbar-subtitle">Arraste e solte o arquivo Excel</span>
           </div>
+          <div class="topbar-right">
+            <span id="runtime-mode-badge" class="runtime-mode-badge hidden">MODO TESTE</span>
+            <div class="topbar-wa-status" id="topbar-wa-status" title="Status WhatsApp">
+              <span class="wa-dot" id="wa-dot"></span>
+              <span class="wa-label" id="wa-label">Desconectado</span>
+            </div>
+          </div>
+        </header>
 
-          <div class="card glass">
-            <!-- STEP 1 CONTENT -->
-            <div id="step1-content">
-              <div class="card-header">
-                <h2 class="card-title">Importar planilha</h2>
-                <p class="card-subtitle">Arraste e solte o arquivo Excel aqui. Você verá um preview antes de confirmar.</p>
+        <main class="app-main" role="main">
+          <!-- WIZARD SECTION -->
+          <section id="wizard-section" class="wizard" aria-label="Assistente de importação">
+            <!-- Legacy wizard-steps hidden but kept for backwards compat -->
+            <div class="wizard-steps hidden" aria-hidden="true">
+              <div class="step active">1. Importar & Preview</div>
+              <div class="step" id="step-match-legacy">2. Revisão</div>
+              <div class="step">3. Configurar</div>
+              <div class="step">4. Preview</div>
+              <div class="step">5. Enviar</div>
+              <div class="step">6. Dashboard</div>
+            </div>
+
+            <div class="card glass animate-card-in">
+              <!-- STEP 1 CONTENT -->
+              <div id="step1-content">
+                <div class="card-header">
+                  <h2 class="card-title">📥 Importar Planilha</h2>
+                  <p class="card-subtitle">Arraste e solte o arquivo Excel aqui. Você verá um preview antes de confirmar.</p>
+                </div>
+
+                <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Arraste e solte o Excel">
+                  <div class="dropzone-scanner" aria-hidden="true"></div>
+                  <div class="dropzone-inner">
+                    <div class="drop-icon">
+                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                        <rect x="8" y="6" width="32" height="36" rx="4" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+                        <path d="M24 18v12M18 24l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="drop-title">Solte o Excel aqui</div>
+                    <div class="drop-hint">Ou clique para selecionar. Formatos: .xlsx, .xls</div>
+                    <div class="drop-file" id="drop-file"></div>
+                    <div style="margin-top: 12px; display:flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                      <button class="btn btn-secondary" id="btn-pick-file" type="button">
+                        <span class="btn-icon-inline">📂</span> Selecionar arquivo
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="preview-area" class="preview-area hidden">
+                  <div class="grid-3">
+                    <div class="mini-card glass kpi-animate">
+                      <div class="mini-title">Vendedores detectados</div>
+                      <div class="mini-value" id="kpi-sellers">—</div>
+                    </div>
+                    <div class="mini-card glass kpi-animate">
+                      <div class="mini-title">Linhas ignoradas</div>
+                      <div class="mini-value" id="kpi-totals">—</div>
+                    </div>
+                    <div class="mini-card glass kpi-animate">
+                      <div class="mini-title">NaN herdadas</div>
+                      <div class="mini-value" id="kpi-nan">—</div>
+                    </div>
+                  </div>
+
+                  <div class="split">
+                    <div class="pane">
+                      <div class="pane-title">⚠️ Warnings / Validações</div>
+                      <div id="warnings" class="warnings"></div>
+                    </div>
+                    <div class="pane">
+                      <div class="pane-title">👥 Vendedores (top)</div>
+                      <div id="seller-list" class="seller-list"></div>
+                    </div>
+                  </div>
+
+                  <div class="pane-title" style="margin-top: 18px;">📋 Preview de dados</div>
+                  <div class="table-wrap glass">
+                    <table class="data-table" id="preview-table"></table>
+                  </div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="footer-left" id="status-text">Aguardando arquivo…</div>
+                  <div class="footer-right">
+                    <button class="btn btn-secondary" id="btn-clear" disabled>
+                      <span class="btn-icon-inline">🗑️</span> Limpar
+                    </button>
+                    <button class="btn btn-primary" id="btn-confirm" disabled>
+                      Continuar <span class="btn-icon-inline">→</span>
+                    </button>
+                  </div>
+                </div>
               </div>
+              
+              <!-- STEP 2 MATCHING CONTENT -->
+              <div id="step2-content" class="hidden">
+                <div class="card-header">
+                  <h2 class="card-title">🔍 Revisão de Vendedores</h2>
+                  <p class="card-subtitle">Alguns vendedores não foram identificados automaticamente. Por favor, associe-os.</p>
+                </div>
+                
+                <div id="matching-list" class="matching-list"></div>
 
-              <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Arraste e solte o Excel">
-                <div class="dropzone-scanner" aria-hidden="true"></div>
-                <div class="dropzone-inner">
-                  <div class="drop-icon">⬇</div>
-                  <div class="drop-title">Solte o Excel aqui</div>
-                  <div class="drop-hint">Ou arraste do Explorer. (XLSX)</div>
-                  <div class="drop-file" id="drop-file"></div>
-                  <div style="margin-top: 10px; display:flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn btn-secondary" id="btn-pick-file" type="button">Selecionar arquivo…</button>
+                <div class="card-footer">
+                  <div class="footer-left">Verifique os nomes com atenção.</div>
+                  <div class="footer-right">
+                    <button class="btn btn-secondary" id="btn-back-step1">
+                      <span class="btn-icon-inline">←</span> Voltar
+                    </button>
+                    <button class="btn btn-primary" id="btn-finish-match">
+                      Salvar e Continuar <span class="btn-icon-inline">→</span>
+                    </button>
                   </div>
                 </div>
               </div>
 
-              <div id="preview-area" class="preview-area hidden">
-                <div class="grid-3">
-                  <div class="mini-card glass">
-                    <div class="mini-title">Vendedores detectados</div>
-                    <div class="mini-value" id="kpi-sellers">—</div>
-                  </div>
-                  <div class="mini-card glass">
-                    <div class="mini-title">Linhas TOTAL ignoradas</div>
-                    <div class="mini-value" id="kpi-totals">—</div>
-                  </div>
-                  <div class="mini-card glass">
-                    <div class="mini-title">NaN herdadas</div>
-                    <div class="mini-value" id="kpi-nan">—</div>
-                  </div>
+              <!-- STEP 3 CONFIG -->
+              <div id="step3-content" class="hidden">
+                <div class="card-header">
+                  <h2 class="card-title">⚙️ Configuração</h2>
+                  <p class="card-subtitle">Defina formato (PDF/Imagem), mensagem e parâmetros anti-bloqueio.</p>
                 </div>
 
-                <div class="split">
+                <div class="wizard-step-body">
                   <div class="pane">
-                    <div class="pane-title">Warnings / Validações</div>
-                    <div id="warnings" class="warnings"></div>
+                    <div class="pane-title">📄 Formato de Saída</div>
+                    <div class="config-options-row">
+                      <label class="config-option-card">
+                        <input type="checkbox" id="cfg-fmt-pdf" checked />
+                        <div class="config-option-content">
+                          <span class="config-option-icon">📄</span>
+                          <span class="config-option-label">PDF</span>
+                          <span class="config-option-desc">Enviar como documento PDF</span>
+                        </div>
+                      </label>
+                      <label class="config-option-card">
+                        <input type="checkbox" id="cfg-fmt-png" />
+                        <div class="config-option-content">
+                          <span class="config-option-icon">🖼️</span>
+                          <span class="config-option-label">PNG</span>
+                          <span class="config-option-desc">Enviar como imagem</span>
+                        </div>
+                      </label>
+                    </div>
                   </div>
+
                   <div class="pane">
-                    <div class="pane-title">Vendedores (top)</div>
-                    <div id="seller-list" class="seller-list"></div>
+                    <div class="pane-title">💬 Mensagem</div>
+                    <textarea id="cfg-message-template" class="input-field wizard-textarea">Olá {vendedor}, segue seu relatório de bonificações do período {periodo}.</textarea>
+                    <div class="wizard-help">Variáveis disponíveis: <code>{vendedor}</code>, <code>{periodo}</code></div>
+                  </div>
+
+                  <div class="pane">
+                    <div class="pane-title">🛡️ Anti-bloqueio</div>
+                    <div class="wizard-grid-2">
+                      <div>
+                        <div class="input-label">Delay mínimo (s)</div>
+                        <input id="cfg-delay-min" class="input-field" type="number" value="8" min="1" />
+                      </div>
+                      <div>
+                        <div class="input-label">Delay máximo (s)</div>
+                        <input id="cfg-delay-max" class="input-field" type="number" value="15" min="1" />
+                      </div>
+                      <div>
+                        <div class="input-label">Tamanho do lote</div>
+                        <input id="cfg-batch-size" class="input-field" type="number" value="10" min="1" />
+                      </div>
+                      <div>
+                        <div class="input-label">Pausa mín. (s)</div>
+                        <input id="cfg-break-min" class="input-field" type="number" value="120" min="10" />
+                      </div>
+                      <div>
+                        <div class="input-label">Pausa máx. (s)</div>
+                        <input id="cfg-break-max" class="input-field" type="number" value="300" min="30" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div class="pane-title" style="margin-top: 18px;">Preview de dados</div>
-                <div class="table-wrap glass">
-                  <table class="data-table" id="preview-table"></table>
+                <div class="card-footer">
+                  <div class="footer-left">Pronto para gerar preview.</div>
+                  <div class="footer-right">
+                    <button class="btn btn-secondary" id="btn-back-step2">
+                      <span class="btn-icon-inline">←</span> Voltar
+                    </button>
+                    <button class="btn btn-primary" id="btn-next-step4">
+                      Continuar <span class="btn-icon-inline">→</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div class="card-footer">
-                <div class="footer-left" id="status-text">Aguardando arquivo…</div>
-                <div class="footer-right">
-                  <button class="btn btn-secondary" id="btn-clear" disabled>Limpar</button>
-                  <button class="btn btn-primary" id="btn-confirm" disabled>Continuar</button>
+              <!-- STEP 4 PREVIEW -->
+              <div id="step4-content" class="hidden">
+                <div class="card-header">
+                  <h2 class="card-title">👁️ Preview do Relatório</h2>
+                  <p class="card-subtitle">Gere e valide o PDF/PNG antes de enviar.</p>
                 </div>
+
+                <div class="wizard-step-body">
+                  <div class="pane">
+                    <div class="pane-title">📦 Artefatos Gerados</div>
+                    <div id="preview-info" class="wizard-info-text state-text is-empty">Ainda não gerado.</div>
+                    <div class="wizard-actions-row">
+                      <button class="btn btn-secondary" id="btn-generate-preview">
+                        <span class="btn-icon-inline">⚡</span> Gerar Preview
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="footer-left">Se estiver ok, avance para execução.</div>
+                  <div class="footer-right">
+                    <button class="btn btn-secondary" id="btn-back-step3">
+                      <span class="btn-icon-inline">←</span> Voltar
+                    </button>
+                    <button class="btn btn-primary" id="btn-next-step5">
+                      Continuar <span class="btn-icon-inline">→</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 5 RUN -->
+              <div id="step5-content" class="hidden">
+                <div class="card-header">
+                  <h2 class="card-title">🚀 Execução de Envios</h2>
+                  <p class="card-subtitle">Dispare os envios e acompanhe o progresso em tempo real.</p>
+                </div>
+
+                <div class="wizard-step-body">
+                  <div class="pane">
+                    <div class="pane-title">📱 WhatsApp</div>
+                    <div class="wizard-row">
+                      <div class="wizard-info-text state-text">Status: <strong id="wa-status">—</strong></div>
+                      <button class="btn btn-secondary" id="btn-wa-connect">
+                        <span class="btn-icon-inline">📱</span> Conectar (QR)
+                      </button>
+                    </div>
+                    <img id="wa-qr-img" class="wizard-qr hidden" alt="QR Code WhatsApp" />
+                  </div>
+
+                  <div class="pane">
+                    <div class="pane-title">📡 Status do Dispatch</div>
+                    <div id="run-info" class="wizard-info-text state-text is-empty">Pronto para iniciar.</div>
+                    <div id="run-stats" class="wizard-info-text wizard-stats state-text"></div>
+                    <div class="wizard-actions-row wizard-actions-row--wrap">
+                      <button class="btn btn-secondary" id="btn-dispatch-pause" disabled>
+                        <span class="btn-icon-inline">⏸️</span> Pausar
+                      </button>
+                      <button class="btn btn-secondary" id="btn-dispatch-resume" disabled>
+                        <span class="btn-icon-inline">▶️</span> Retomar
+                      </button>
+                      <button class="btn btn-ghost" id="btn-dispatch-retry" disabled>
+                        <span class="btn-icon-inline">🔄</span> Reenviar falhas
+                      </button>
+                      <button class="btn btn-ghost" id="btn-dispatch-stop" disabled>
+                        <span class="btn-icon-inline">⏹️</span> Parar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="footer-left">Você poderá pausar/retomar a qualquer momento.</div>
+                  <div class="footer-right">
+                    <button class="btn btn-secondary" id="btn-back-step4">
+                      <span class="btn-icon-inline">←</span> Voltar
+                    </button>
+                    <button class="btn btn-ghost" id="btn-open-dashboard" disabled>
+                      <span class="btn-icon-inline">📊</span> Dashboard Final
+                    </button>
+                    <button class="btn btn-primary" id="btn-start-dispatch">
+                      <span class="btn-icon-inline">🚀</span> Iniciar Envios
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 6 DASHBOARD -->
+              <div id="step6-content" class="hidden">
+                <div class="card-header">
+                  <h2 class="card-title">📊 Dashboard de Envios</h2>
+                  <p class="card-subtitle">Visão completa dos contatos enviados, não enviados e erros.</p>
+                </div>
+
+                <div class="wizard-step-body">
+                  <div class="dashboard-kpi-row">
+                    <div class="dash-kpi-card kpi-animate dash-kpi--success">
+                      <div class="dash-kpi-icon">✅</div>
+                      <div class="dash-kpi-data">
+                        <div class="dash-kpi-value" id="dash-kpi-sent">0</div>
+                        <div class="dash-kpi-label">Enviados</div>
+                      </div>
+                    </div>
+                    <div class="dash-kpi-card kpi-animate dash-kpi--warn">
+                      <div class="dash-kpi-icon">⏳</div>
+                      <div class="dash-kpi-data">
+                        <div class="dash-kpi-value" id="dash-kpi-unsent">0</div>
+                        <div class="dash-kpi-label">Não enviados</div>
+                      </div>
+                    </div>
+                    <div class="dash-kpi-card kpi-animate dash-kpi--error">
+                      <div class="dash-kpi-icon">❌</div>
+                      <div class="dash-kpi-data">
+                        <div class="dash-kpi-value" id="dash-kpi-errors">0</div>
+                        <div class="dash-kpi-label">Erros</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pane" style="margin-top: 14px;">
+                    <div class="pane-title">📋 Resumo do Job</div>
+                    <div id="dash-summary" class="wizard-info-text state-text is-empty">Sem dados para exibir.</div>
+                  </div>
+
+                  <div class="pane" style="margin-top: 14px;">
+                    <div class="pane-title">📝 Detalhes por contato</div>
+                    <div class="table-wrap glass">
+                      <table class="data-table" id="dashboard-table"></table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-footer">
+                  <div class="footer-left">Use essa visão para agir rápido nos não enviados.</div>
+                  <div class="footer-right">
+                    <button class="btn btn-secondary" id="btn-back-step5">
+                      <span class="btn-icon-inline">←</span> Voltar
+                    </button>
+                    <button class="btn btn-primary" id="btn-refresh-dashboard">
+                      <span class="btn-icon-inline">🔄</span> Atualizar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- CONTACTS SECTION -->
+          <section id="contacts-section" class="contacts-view hidden" aria-label="Gerenciamento de contatos">
+            <div class="contacts-header">
+              <h1 class="contacts-title">👥 Meus Contatos</h1>
+              <div class="contacts-header-actions">
+                <button class="btn btn-secondary" id="btn-back-home">
+                  <span class="btn-icon-inline">←</span> Voltar
+                </button>
+                <button class="btn btn-ghost" id="btn-import-contacts">
+                  <span class="btn-icon-inline">📥</span> Importar Contatos
+                </button>
+                <button class="btn btn-primary" id="btn-new-contact">
+                  <span class="btn-icon-inline">➕</span> Novo Contato
+                </button>
               </div>
             </div>
             
-            <!-- STEP 2 MATCHING CONTENT (Hidden by default) -->
-            <div id="step2-content" class="hidden">
-              <div class="card-header">
-                <h2 class="card-title">Revisão de Vendedores</h2>
-                <p class="card-subtitle">Alguns vendedores não foram identificados automaticamente. Por favor, associe-os.</p>
-              </div>
-              
-              <div id="matching-list" class="matching-list">
-                <!-- Matching Items injected here -->
-              </div>
-
-              <div class="card-footer">
-                <div class="footer-left">Verifique os nomes com atenção.</div>
-                <div class="footer-right">
-                  <button class="btn btn-secondary" id="btn-back-step1">Voltar</button>
-                  <button class="btn btn-primary" id="btn-finish-match">Salvar e Continuar</button>
+            <div class="contacts-import glass" id="contacts-import">
+              <div class="contacts-import-header">
+                <div>
+                  <h2 class="contacts-import-title">Importar Contatos</h2>
+                  <p class="contacts-import-subtitle">Carregue CSV/XLSX, mapeie colunas e confirme. O sistema deduplica por telefone.</p>
+                </div>
+                <div class="contacts-import-actions">
+                  <button class="btn btn-secondary" id="btn-import-pick">Selecionar arquivo…</button>
+                  <button class="btn btn-ghost" id="btn-import-reset" disabled>Limpar</button>
                 </div>
               </div>
-            </div>
 
-            <!-- STEP 3 CONFIG (Hidden by default) -->
-            <div id="step3-content" class="hidden">
-              <div class="card-header">
-                <h2 class="card-title">Configuração</h2>
-                <p class="card-subtitle">Defina formato (PDF/Imagem), mensagem e parâmetros anti-bloqueio.</p>
-              </div>
+              <div class="contacts-import-body">
+                <div class="import-file-info" id="import-file-info">Nenhum arquivo selecionado.</div>
 
-              <div class="wizard-step-body">
-                <div class="pane">
-                  <div class="pane-title">Formato</div>
-                  <label class="wizard-option">
-                    <input type="checkbox" id="cfg-fmt-pdf" checked /> <span>Enviar PDF</span>
-                  </label>
-                  <label class="wizard-option">
-                    <input type="checkbox" id="cfg-fmt-png" /> <span>Enviar Imagem (PNG)</span>
-                  </label>
-                </div>
-
-                <div class="pane">
-                  <div class="pane-title">Mensagem</div>
-                  <textarea id="cfg-message-template" class="input-field wizard-textarea">Olá {vendedor}, segue seu relatório de bonificações do período {periodo}.</textarea>
-                  <div class="wizard-help">Variáveis: {vendedor}, {periodo}</div>
-                </div>
-
-                <div class="pane">
-                  <div class="pane-title">Anti-bloqueio</div>
-                  <div class="wizard-grid-2">
-                    <div>
-                      <div class="input-label">Delay min (s)</div>
-                      <input id="cfg-delay-min" class="input-field" type="number" value="8" />
-                    </div>
-                    <div>
-                      <div class="input-label">Delay max (s)</div>
-                      <input id="cfg-delay-max" class="input-field" type="number" value="15" />
-                    </div>
-                    <div>
-                      <div class="input-label">Lote (envios)</div>
-                      <input id="cfg-batch-size" class="input-field" type="number" value="10" />
-                    </div>
-                    <div>
-                      <div class="input-label">Pausa min (s)</div>
-                      <input id="cfg-break-min" class="input-field" type="number" value="120" />
-                    </div>
-                    <div>
-                      <div class="input-label">Pausa max (s)</div>
-                      <input id="cfg-break-max" class="input-field" type="number" value="300" />
-                    </div>
+                <div class="import-mapping hidden" id="import-mapping">
+                  <div class="mapping-field">
+                    <label>Coluna de Nome</label>
+                    <select id="map-name" class="form-input"></select>
+                  </div>
+                  <div class="mapping-field">
+                    <label>Coluna de Telefone</label>
+                    <select id="map-phone" class="form-input"></select>
+                  </div>
+                  <div class="mapping-field">
+                    <label>Coluna de Alias (opcional)</label>
+                    <select id="map-alias" class="form-input"></select>
                   </div>
                 </div>
-              </div>
 
-              <div class="card-footer">
-                <div class="footer-left">Pronto para gerar preview.</div>
-                <div class="footer-right">
-                  <button class="btn btn-secondary" id="btn-back-step2">Voltar</button>
-                  <button class="btn btn-primary" id="btn-next-step4">Continuar</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- STEP 4 PREVIEW (Hidden by default) -->
-            <div id="step4-content" class="hidden">
-              <div class="card-header">
-                <h2 class="card-title">Preview</h2>
-                <p class="card-subtitle">Gere e valide o PDF/PNG antes de enviar.</p>
-              </div>
-
-              <div class="wizard-step-body">
-                <div class="pane">
-                  <div class="pane-title">Artefatos</div>
-                  <div id="preview-info" class="wizard-info-text state-text is-empty">Ainda não gerado.</div>
-                  <div class="wizard-actions-row">
-                    <button class="btn btn-secondary" id="btn-generate-preview">Gerar Preview</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card-footer">
-                <div class="footer-left">Se estiver ok, avance para execução.</div>
-                <div class="footer-right">
-                  <button class="btn btn-secondary" id="btn-back-step3">Voltar</button>
-                  <button class="btn btn-primary" id="btn-next-step5">Continuar</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- STEP 5 RUN (Hidden by default) -->
-            <div id="step5-content" class="hidden">
-              <div class="card-header">
-                <h2 class="card-title">Execução</h2>
-                <p class="card-subtitle">Dispare os envios e acompanhe progresso.</p>
-              </div>
-
-              <div class="wizard-step-body">
-                <div class="pane">
-                  <div class="pane-title">WhatsApp</div>
-                  <div class="wizard-row">
-                    <div class="wizard-info-text state-text">Status: <strong id="wa-status">—</strong></div>
-                    <button class="btn btn-secondary" id="btn-wa-connect">Conectar (QR)</button>
-                  </div>
-                  <img id="wa-qr-img" class="wizard-qr hidden" alt="QR Code WhatsApp" />
-                </div>
-
-                <div class="pane">
-                  <div class="pane-title">Status do Dispatch</div>
-                  <div id="run-info" class="wizard-info-text state-text is-empty">Pronto para iniciar.</div>
-                  <div id="run-stats" class="wizard-info-text wizard-stats state-text"></div>
-                  <div class="wizard-actions-row wizard-actions-row--wrap">
-                    <button class="btn btn-secondary" id="btn-dispatch-pause" disabled>Pausar</button>
-                    <button class="btn btn-secondary" id="btn-dispatch-resume" disabled>Retomar</button>
-                    <button class="btn btn-ghost" id="btn-dispatch-retry" disabled>Reenviar falhas</button>
-                    <button class="btn btn-ghost" id="btn-dispatch-stop" disabled>Parar</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card-footer">
-                <div class="footer-left">Você poderá pausar/retomar.</div>
-                <div class="footer-right">
-                  <button class="btn btn-secondary" id="btn-back-step4">Voltar</button>
-                  <button class="btn btn-ghost" id="btn-open-dashboard" disabled>Dashboard Final</button>
-                  <button class="btn btn-primary" id="btn-start-dispatch">Iniciar Envios</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- STEP 6 DASHBOARD (Hidden by default) -->
-            <div id="step6-content" class="hidden">
-              <div class="card-header">
-                <h2 class="card-title">Dashboard de Envios</h2>
-                <p class="card-subtitle">Visão completa dos contatos enviados, não enviados e erros.</p>
-              </div>
-
-              <div class="wizard-step-body">
-                <div class="grid-3">
+                <div class="import-stats hidden" id="import-stats">
                   <div class="mini-card glass">
-                    <div class="mini-title">Enviados</div>
-                    <div class="mini-value" id="dash-kpi-sent">0</div>
+                    <div class="mini-title">Linhas</div>
+                    <div class="mini-value" id="stat-rows">—</div>
                   </div>
                   <div class="mini-card glass">
-                    <div class="mini-title">Não enviados</div>
-                    <div class="mini-value" id="dash-kpi-unsent">0</div>
+                    <div class="mini-title">Telefones únicos</div>
+                    <div class="mini-value" id="stat-unique">—</div>
                   </div>
                   <div class="mini-card glass">
-                    <div class="mini-title">Erros</div>
-                    <div class="mini-value" id="dash-kpi-errors">0</div>
+                    <div class="mini-title">Duplicados</div>
+                    <div class="mini-value" id="stat-dup">—</div>
+                  </div>
+                  <div class="mini-card glass">
+                    <div class="mini-title">Inválidos</div>
+                    <div class="mini-value" id="stat-invalid">—</div>
                   </div>
                 </div>
 
-                <div class="pane" style="margin-top: 14px;">
-                  <div class="pane-title">Resumo do Job</div>
-                  <div id="dash-summary" class="wizard-info-text state-text is-empty">Sem dados para exibir.</div>
-                </div>
-
-                <div class="pane" style="margin-top: 14px;">
-                  <div class="pane-title">Detalhes por contato</div>
+                <div class="import-preview hidden" id="import-preview">
+                  <div class="pane-title">Preview normalizado</div>
                   <div class="table-wrap glass">
-                    <table class="data-table" id="dashboard-table"></table>
+                    <table class="data-table" id="import-preview-table"></table>
                   </div>
                 </div>
               </div>
 
-              <div class="card-footer">
-                <div class="footer-left">Use essa visão para agir rápido nos não enviados.</div>
+              <div class="contacts-import-footer">
+                <div class="footer-left state-text is-empty" id="import-status">Selecione um arquivo para começar.</div>
                 <div class="footer-right">
-                  <button class="btn btn-secondary" id="btn-back-step5">Voltar</button>
-                  <button class="btn btn-primary" id="btn-refresh-dashboard">Atualizar</button>
+                  <button class="btn btn-primary" id="btn-import-commit" disabled>Importar contatos</button>
                 </div>
               </div>
             </div>
 
+            <div id="contacts-grid" class="contacts-grid"></div>
+          </section>
+        </main>
+
+        <!-- ═══ STATUS BAR ═══ -->
+        <footer class="app-statusbar" role="contentinfo">
+          <div class="statusbar-left">
+            <span class="statusbar-item" id="statusbar-version">v0.1.0</span>
+            <span class="statusbar-divider">|</span>
+            <span class="statusbar-item" id="statusbar-step">Etapa 1/6</span>
           </div>
-        </section>
-
-        <!-- CONTACTS SECTION (Hidden by default) -->
-        <section id="contacts-section" class="contacts-view hidden">
-          <div class="contacts-header">
-            <h1 class="contacts-title">Meus Contatos</h1>
-            <div class="contacts-header-actions">
-              <button class="btn btn-secondary" id="btn-back-home">Voltar</button>
-              <button class="btn btn-ghost" id="btn-import-contacts">Importar Contatos…</button>
-              <button class="btn btn-primary" id="btn-new-contact">+ Novo Contato</button>
-            </div>
+          <div class="statusbar-right">
+            <span class="statusbar-item statusbar-wa" id="statusbar-wa">
+              <span class="statusbar-dot" id="statusbar-wa-dot"></span>
+              WhatsApp: Desconectado
+            </span>
           </div>
-          
-          <div class="contacts-import glass" id="contacts-import">
-            <div class="contacts-import-header">
-              <div>
-                <h2 class="contacts-import-title">Importar Contatos</h2>
-                <p class="contacts-import-subtitle">Carregue CSV/XLSX, mapeie colunas e confirme. O sistema deduplica por telefone.</p>
-              </div>
-              <div class="contacts-import-actions">
-                <button class="btn btn-secondary" id="btn-import-pick">Selecionar arquivo…</button>
-                <button class="btn btn-ghost" id="btn-import-reset" disabled>Limpar</button>
-              </div>
-            </div>
-
-            <div class="contacts-import-body">
-              <div class="import-file-info" id="import-file-info">Nenhum arquivo selecionado.</div>
-
-              <div class="import-mapping hidden" id="import-mapping">
-                <div class="mapping-field">
-                  <label>Coluna de Nome</label>
-                  <select id="map-name" class="form-input"></select>
-                </div>
-                <div class="mapping-field">
-                  <label>Coluna de Telefone</label>
-                  <select id="map-phone" class="form-input"></select>
-                </div>
-                <div class="mapping-field">
-                  <label>Coluna de Alias (opcional)</label>
-                  <select id="map-alias" class="form-input"></select>
-                </div>
-              </div>
-
-              <div class="import-stats hidden" id="import-stats">
-                <div class="mini-card glass">
-                  <div class="mini-title">Linhas</div>
-                  <div class="mini-value" id="stat-rows">—</div>
-                </div>
-                <div class="mini-card glass">
-                  <div class="mini-title">Telefones únicos</div>
-                  <div class="mini-value" id="stat-unique">—</div>
-                </div>
-                <div class="mini-card glass">
-                  <div class="mini-title">Duplicados</div>
-                  <div class="mini-value" id="stat-dup">—</div>
-                </div>
-                <div class="mini-card glass">
-                  <div class="mini-title">Inválidos</div>
-                  <div class="mini-value" id="stat-invalid">—</div>
-                </div>
-              </div>
-
-              <div class="import-preview hidden" id="import-preview">
-                <div class="pane-title">Preview normalizado</div>
-                <div class="table-wrap glass">
-                  <table class="data-table" id="import-preview-table"></table>
-                </div>
-              </div>
-            </div>
-
-            <div class="contacts-import-footer">
-              <div class="footer-left state-text is-empty" id="import-status">Selecione um arquivo para começar.</div>
-              <div class="footer-right">
-                <button class="btn btn-primary" id="btn-import-commit" disabled>Importar contatos</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="contacts-grid" class="contacts-grid">
-            <!-- Contacts Injected Here -->
-          </div>
-        </section>
-      </main>
+        </footer>
+      </div>
     </div>
 
     <!-- CONTACTS IMPORT MODAL -->

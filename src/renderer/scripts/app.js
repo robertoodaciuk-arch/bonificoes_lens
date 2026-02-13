@@ -524,9 +524,92 @@
     };
   }
 
+  // ═══ SIDEBAR NAVIGATION ═══
+  const stepTitles = {
+    step1: { title: '📥 Importar Planilha', subtitle: 'Arraste e solte o arquivo Excel' },
+    step2: { title: '🔍 Revisão de Vendedores', subtitle: 'Associe vendedores não identificados' },
+    step3: { title: '⚙️ Configuração', subtitle: 'Formato, mensagem e anti-bloqueio' },
+    step4: { title: '👁️ Preview do Relatório', subtitle: 'Gere e valide antes de enviar' },
+    step5: { title: '🚀 Execução de Envios', subtitle: 'Dispare e acompanhe o progresso' },
+    step6: { title: '📊 Dashboard de Envios', subtitle: 'Resultados completos dos envios' },
+    contacts: { title: '👥 Meus Contatos', subtitle: 'Gerenciar contatos de vendedores' },
+  };
+
+  function updateTopbar(navId) {
+    const info = stepTitles[navId] || stepTitles.step1;
+    const topbarTitle = document.getElementById('topbar-title');
+    const topbarSubtitle = document.getElementById('topbar-subtitle');
+    if (topbarTitle) topbarTitle.textContent = info.title;
+    if (topbarSubtitle) topbarSubtitle.textContent = info.subtitle;
+
+    // Update statusbar step
+    const stepNum = navId.startsWith('step') ? navId.replace('step', '') : '';
+    const statusbarStep = document.getElementById('statusbar-step');
+    if (statusbarStep && stepNum) {
+      statusbarStep.textContent = `Etapa ${stepNum}/6`;
+    }
+  }
+
+  function setSidebarActive(navId) {
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.nav === navId);
+    });
+    updateTopbar(navId);
+  }
+
+  function bindSidebar() {
+    document.querySelectorAll('.sidebar-item[data-nav]').forEach(item => {
+      item.addEventListener('click', () => {
+        const navId = item.dataset.nav;
+        if (!navId) return;
+
+        if (navId === 'contacts') {
+          // Show contacts, hide wizard
+          document.getElementById('wizard-section')?.classList.add('hidden');
+          document.getElementById('contacts-section')?.classList.remove('hidden');
+          setSidebarActive('contacts');
+          return;
+        }
+
+        // Show wizard, hide contacts
+        document.getElementById('wizard-section')?.classList.remove('hidden');
+        document.getElementById('contacts-section')?.classList.add('hidden');
+
+        // Show the right step
+        const stepMap = {
+          step1: 'step1-content',
+          step2: 'step2-content',
+          step3: 'step3-content',
+          step4: 'step4-content',
+          step5: 'step5-content',
+          step6: 'step6-content',
+        };
+
+        Object.values(stepMap).forEach(id => {
+          document.getElementById(id)?.classList.add('hidden');
+        });
+
+        const targetId = stepMap[navId];
+        if (targetId) {
+          document.getElementById(targetId)?.classList.remove('hidden');
+        }
+
+        setSidebarActive(navId);
+
+        // Trigger show functions for steps
+        if (navId === 'step5') window.wizardStep5?.show?.();
+        if (navId === 'step6') window.wizardStep6?.show?.();
+      });
+    });
+  }
+
+  // Make sidebar update accessible to step scripts
+  window.setSidebarActive = setSidebarActive;
+
   bindDropzone();
   bindActions();
   bindCommandPalette();
+  bindSidebar();
   setupTheme();
   setupRuntimeModeBadge();
   exposeTestHook();

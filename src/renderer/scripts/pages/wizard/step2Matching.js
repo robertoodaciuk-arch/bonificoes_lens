@@ -21,6 +21,8 @@
     document.querySelectorAll('.wizard-steps .step').forEach((s) => s.classList.remove('active'));
     const steps = document.querySelectorAll('.wizard-steps .step');
     steps[idx]?.classList.add('active');
+    const sidebarMap = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6'];
+    if (window.setSidebarActive && sidebarMap[idx]) window.setSidebarActive(sidebarMap[idx]);
   }
 
   function setMatchingState(type, title, description) {

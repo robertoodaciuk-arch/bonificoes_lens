@@ -8,7 +8,7 @@ function parseMoneyToCentsBr(value) {
   const raw = String(value).trim();
   if (!raw) return null;
 
-  // Remove currency symbols and spaces
+  // Remove símbolo monetário e espaços
   const cleaned = raw
     .replace(/R\$\s*/gi, '')
     .replace(/\./g, '')

@@ -6,7 +6,7 @@ function toIso(yyyy, mm, dd) {
 }
 
 function excelSerialToIso(serial) {
-  // Excel serial date (1900-based with leap bug compensation)
+  // Data serial do Excel (base 1900 com compensação de bug de ano bissexto)
   if (!Number.isFinite(serial)) return null;
   const excelEpoch = new Date(Date.UTC(1899, 11, 30));
   const utcMs = excelEpoch.getTime() + Math.round(serial) * 86400000;
