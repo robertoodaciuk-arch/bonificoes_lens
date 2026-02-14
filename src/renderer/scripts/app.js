@@ -36,6 +36,8 @@
     kpiSellers: document.getElementById('kpi-sellers'),
     kpiTotals: document.getElementById('kpi-totals'),
     kpiNan: document.getElementById('kpi-nan'),
+    periodSelector: document.getElementById('period-selector'),
+    periodSelectorWrap: document.getElementById('period-selector-wrap'),
   };
 
   const state = {
@@ -60,6 +62,21 @@
     }
   }
 
+  const MONTH_NAMES_PT = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+  ];
+
+  function formatPeriodLabel(periodRef) {
+    if (!periodRef) return '';
+    const m = String(periodRef).match(/^(\d{4})-(\d{2})$/);
+    if (!m) return periodRef;
+    const year = m[1];
+    const monthIdx = Number(m[2]) - 1;
+    const monthName = MONTH_NAMES_PT[monthIdx] || m[2];
+    return `${monthName} de ${year}`;
+  }
+
   function nowPeriodRef() {
     const d = new Date();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -71,10 +88,34 @@
 
     // dd/mm/yyyy
     if (typeof raw === 'string') {
-      const m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      let m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (m) {
         const month = String(Number(m[2])).padStart(2, '0');
         return `${m[3]}-${month}`;
+      }
+
+      // dd/mm/yy
+      m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);
+      if (m) {
+        const yy = Number(m[3]);
+        const fullYear = yy >= 50 ? 1900 + yy : 2000 + yy;
+        const month = String(Number(m[2])).padStart(2, '0');
+        return `${fullYear}-${month}`;
+      }
+
+      // ISO yyyy-mm-dd
+      m = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return `${m[1]}-${m[2]}`;
+    }
+
+    // Excel serial number
+    if (typeof raw === 'number' && raw > 1000 && raw < 200000) {
+      const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+      const utcMs = excelEpoch.getTime() + Math.round(raw) * 86400000;
+      const date = new Date(utcMs);
+      if (!Number.isNaN(date.getTime())) {
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        return `${date.getUTCFullYear()}-${month}`;
       }
     }
 
@@ -201,6 +242,15 @@
     renderSellerList(preview.detected?.sellers || []);
     renderPreviewTable(preview.columns || [], preview.previewRows || []);
 
+    // Show period selector with derived value
+    const derivedPeriod = derivePeriodRef(preview.previewRows || []);
+    if (ui.periodSelector) {
+      ui.periodSelector.value = derivedPeriod;
+    }
+    if (ui.periodSelectorWrap) {
+      ui.periodSelectorWrap.style.display = '';
+    }
+
     const hasBlockingError = (preview.anomalies || []).some((a) => a.severity === 'error');
     if (hasBlockingError) {
       showToast('warn', 'Preview gerado com alertas críticos. Revise antes de continuar.');
@@ -222,6 +272,7 @@
     if (ui.kpiSellers) ui.kpiSellers.textContent = '—';
     if (ui.kpiTotals) ui.kpiTotals.textContent = '—';
     if (ui.kpiNan) ui.kpiNan.textContent = '—';
+    if (ui.periodSelectorWrap) ui.periodSelectorWrap.style.display = 'none';
 
     setBusy('Aguardando arquivo…');
     setLoading(false);
@@ -281,7 +332,9 @@
       return;
     }
 
-    const periodRef = derivePeriodRef(state.lastPreview.previewRows || []);
+    // Use user-selected period if available, otherwise derive from data
+    const periodSelector = document.getElementById('period-selector');
+    const periodRef = periodSelector?.value || derivePeriodRef(state.lastPreview.previewRows || []);
 
     setLoading(true);
     setBusy('Confirmando importação…');
@@ -302,7 +355,7 @@
       window.wizardState.periodRef = periodRef;
 
       showToast('success', 'Importação confirmada.');
-      setBusy(`Importação pronta (${periodRef}).`);
+      setBusy(`Importação pronta (${formatPeriodLabel(periodRef)}).`);
 
       await window.wizardStep2?.init?.({
         importId: res.data.importId,
@@ -455,18 +508,30 @@
 
     ui.dropzone.addEventListener('drop', async (e) => {
       const file = e.dataTransfer?.files?.[0];
-      if (!file?.path) return;
+      if (!file) return;
 
-      const isExcel = /\.xlsx?$/i.test(file.path);
+      const filePath = file.path || '';
+      const fileName = file.name || '';
+
+      if (!filePath) {
+        showToast('error', 'Não foi possível obter o caminho do arquivo arrastado.');
+        return;
+      }
+
+      const isExcel = /\.xlsx?$/i.test(filePath || fileName);
       if (!isExcel) {
         showToast('error', 'Selecione uma planilha Excel (.xlsx ou .xls).');
         return;
       }
 
-      await loadByPath(file.path);
+      await loadByPath(filePath);
     });
 
-    ui.dropzone.addEventListener('click', () => pickFileAndLoad());
+    ui.dropzone.addEventListener('click', (e) => {
+      // Avoid double-triggering when button inside dropzone is clicked
+      if (e.target.closest('#btn-pick-file')) return;
+      pickFileAndLoad();
+    });
     ui.dropzone.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();

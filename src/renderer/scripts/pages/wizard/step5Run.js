@@ -69,7 +69,7 @@
         <div class="run-kpi-grid">
           <div class="run-kpi run-kpi--success"><small>Enviados</small><strong>${sent}</strong></div>
           <div class="run-kpi"><small>Pendentes</small><strong>${pending}</strong></div>
-          <div class="run-kpi run-kpi--warn"><small>Retry</small><strong>${retry}</strong></div>
+          <div class="run-kpi run-kpi--warn"><small>Reenvio</small><strong>${retry}</strong></div>
           <div class="run-kpi run-kpi--error"><small>Falhas</small><strong>${failed}</strong></div>
           <div class="run-kpi"><small>Processando</small><strong>${processing}</strong></div>
         </div>
@@ -110,8 +110,10 @@
         setRunInfo(`Envio com erro${jobText}`, 'error');
       } else if (stateLabel === 'PAUSED') {
         setRunInfo(`Envio pausado${jobText}`, 'loading');
+      } else if (stateLabel === 'STOPPED') {
+        setRunInfo(`Envio parado${jobText}`, 'empty');
       } else {
-        setRunInfo(`Status: ${stateLabel}${jobText}`, 'success');
+        setRunInfo(`Estado: ${stateLabel}${jobText}`, 'success');
       }
 
       renderStats(statusPayload);

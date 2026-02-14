@@ -88,6 +88,6 @@ function parseExcel(filePath) {
   return {
     meta: { fileName: path.basename(filePath), totalRows: dataRows.length },
     headers: headers,
-    rows: dataRows.slice(0, 1000) // Limite de segurança inicial para não travar IPC
+    rows: dataRows // No artificial limit - process all rows
   };
 }

@@ -119,3 +119,86 @@
     max-width: none;
   }
 }
+
+/* Inline create contact form */
+.inline-create-form {
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-glass);
+}
+
+.inline-form-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.inline-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.inline-form-field .input-sm {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.match-actions-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-sm {
+  font-size: 12px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+/* Retry phone dialog */
+.retry-phone-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.retry-phone-dialog {
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  max-width: 420px;
+  width: 90%;
+}
+
+.retry-phone-dialog h3 {
+  margin-top: 0;
+}
+
+.retry-phone-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Period selector */
+.period-selector-wrap .input-sm {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.match-row {
+  flex-wrap: wrap;
+}
