@@ -77,6 +77,12 @@
     return '';
   }
 
+  // Valid Excel serial date range (approx. 1902 to 2447)
+  const MIN_EXCEL_SERIAL = 1000;
+  const MAX_EXCEL_SERIAL = 200000;
+  // Century pivot: years >= 50 are 1900s, < 50 are 2000s
+  const YEAR_2DIGIT_PIVOT = 50;
+
   function excelSerialToBrDate(serial) {
     if (!Number.isFinite(serial)) return String(serial);
     const excelEpoch = new Date(Date.UTC(1899, 11, 30));
@@ -103,14 +109,14 @@
     }
 
     // Excel serial number
-    if (typeof value === 'number' && value > 1000 && value < 200000) {
+    if (typeof value === 'number' && value > MIN_EXCEL_SERIAL && value < MAX_EXCEL_SERIAL) {
       return excelSerialToBrDate(value);
     }
 
     // String that looks like a number (Excel serial)
     if (typeof value === 'string') {
       const asNum = Number(value.replace(',', '.'));
-      if (Number.isFinite(asNum) && asNum > 1000 && asNum < 200000) {
+      if (Number.isFinite(asNum) && asNum > MIN_EXCEL_SERIAL && asNum < MAX_EXCEL_SERIAL) {
         return excelSerialToBrDate(asNum);
       }
     }

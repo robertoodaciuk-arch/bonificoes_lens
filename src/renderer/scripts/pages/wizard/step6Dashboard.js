@@ -98,7 +98,13 @@
           if (contactsApi) {
             const allRes = await contactsApi.getAll();
             const found = (allRes?.data || []).find(
-              (c) => c.display_name === contact || (c.aliases || []).includes(seller)
+              (c) => {
+                // Prioritize exact name match
+                if (c.display_name === contact) return true;
+                // Fallback: match by seller alias only if name also matches
+                if (seller && Array.isArray(c.aliases) && c.aliases.includes(seller) && c.display_name === contact) return true;
+                return false;
+              }
             );
             if (found) {
               await contactsApi.update(found.id, { phone });

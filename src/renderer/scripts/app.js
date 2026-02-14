@@ -83,6 +83,12 @@
     return `${d.getFullYear()}-${m}`;
   }
 
+  // Valid Excel serial date range (approx. 1902 to 2447)
+  const MIN_EXCEL_SERIAL = 1000;
+  const MAX_EXCEL_SERIAL = 200000;
+  // Century pivot: years >= this value are 1900s, below are 2000s
+  const YEAR_2DIGIT_PIVOT = 50;
+
   function tryParsePeriodRefFromDate(raw) {
     if (raw === null || raw === undefined || raw === '') return null;
 
@@ -98,7 +104,7 @@
       m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);
       if (m) {
         const yy = Number(m[3]);
-        const fullYear = yy >= 50 ? 1900 + yy : 2000 + yy;
+        const fullYear = yy >= YEAR_2DIGIT_PIVOT ? 1900 + yy : 2000 + yy;
         const month = String(Number(m[2])).padStart(2, '0');
         return `${fullYear}-${month}`;
       }
@@ -109,7 +115,7 @@
     }
 
     // Excel serial number
-    if (typeof raw === 'number' && raw > 1000 && raw < 200000) {
+    if (typeof raw === 'number' && raw > MIN_EXCEL_SERIAL && raw < MAX_EXCEL_SERIAL) {
       const excelEpoch = new Date(Date.UTC(1899, 11, 30));
       const utcMs = excelEpoch.getTime() + Math.round(raw) * 86400000;
       const date = new Date(utcMs);

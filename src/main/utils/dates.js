@@ -36,6 +36,7 @@ function parseDateBrToIso(value) {
   m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);
   if (m) {
     const yy = Number(m[3]);
+    // Century pivot: years >= 50 are 1900s, < 50 are 2000s
     const fullYear = yy >= 50 ? 1900 + yy : 2000 + yy;
     return toIso(fullYear, m[2], m[1]);
   }
