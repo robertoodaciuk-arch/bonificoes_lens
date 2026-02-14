@@ -189,7 +189,13 @@
                 </div>
 
                 <div class="card-footer">
-                  <div class="footer-left" id="status-text">Aguardando arquivo…</div>
+                  <div class="footer-left">
+                    <span id="status-text">Aguardando arquivo…</span>
+                    <div class="period-selector-wrap" id="period-selector-wrap" style="display:none; margin-top:8px;">
+                      <label class="input-label" for="period-selector">📅 Período das bonificações</label>
+                      <input type="month" id="period-selector" class="input-field input-sm" style="max-width:200px;" />
+                    </div>
+                  </div>
                   <div class="footer-right">
                     <button class="btn btn-secondary" id="btn-clear" disabled>
                       <span class="btn-icon-inline">🗑️</span> Limpar
@@ -205,7 +211,7 @@
               <div id="step2-content" class="hidden">
                 <div class="card-header">
                   <h2 class="card-title">🔍 Revisão de Vendedores</h2>
-                  <p class="card-subtitle">Alguns vendedores não foram identificados automaticamente. Por favor, associe-os.</p>
+                  <p class="card-subtitle" id="step2-subtitle">Revise os vendedores identificados e ajuste as associações conforme necessário.</p>
                 </div>
                 
                 <div id="matching-list" class="matching-list"></div>
@@ -255,7 +261,7 @@
 
                   <div class="pane">
                     <div class="pane-title">💬 Mensagem</div>
-                    <textarea id="cfg-message-template" class="input-field wizard-textarea">{Oi|Olá|Oii|Oi, tudo bem?} {vendedor}, {segue seu relatório de bonificações|aqui está o relatório de bonificações|te envio o relatório de bonificações} do período {periodo}.</textarea>
+                    <textarea id="cfg-message-template" class="input-field wizard-textarea">{Oi|Olá|Oii|Oi, tudo bem?} {vendedor}, {segue seu relatório de bonificações|aqui está o relatório de bonificações|te envio o relatório de bonificações} do período de {periodo}.</textarea>
                     <div class="wizard-help">
                       Variáveis: <code>{vendedor}</code>, <code>{periodo}</code><br>
                       Variação: Use <code>{opção1|opção2|opção3}</code> para variar mensagens automaticamente.<br>
@@ -269,26 +275,35 @@
 
                   <div class="pane">
                     <div class="pane-title">🛡️ Anti-bloqueio</div>
+                    <p class="wizard-help" style="margin-bottom:12px;">
+                      Configurações para evitar que o WhatsApp bloqueie sua conta por envios em massa. 
+                      Quanto maior os intervalos, menor o risco de bloqueio.
+                    </p>
                     <div class="wizard-grid-2">
                       <div>
                         <div class="input-label">Delay mínimo (s)</div>
                         <input id="cfg-delay-min" class="input-field" type="number" value="8" min="1" />
+                        <small class="wizard-help">Tempo mínimo de espera entre cada envio individual de mensagem.</small>
                       </div>
                       <div>
                         <div class="input-label">Delay máximo (s)</div>
                         <input id="cfg-delay-max" class="input-field" type="number" value="15" min="1" />
+                        <small class="wizard-help">Tempo máximo de espera entre cada envio. O sistema escolhe um valor aleatório entre mín. e máx.</small>
                       </div>
                       <div>
                         <div class="input-label">Tamanho do lote</div>
                         <input id="cfg-batch-size" class="input-field" type="number" value="10" min="1" />
+                        <small class="wizard-help">Quantidade de mensagens enviadas antes de fazer uma pausa maior. Ex: a cada 10 envios, faz uma pausa.</small>
                       </div>
                       <div>
                         <div class="input-label">Pausa mín. (s)</div>
                         <input id="cfg-break-min" class="input-field" type="number" value="120" min="10" />
+                        <small class="wizard-help">Tempo mínimo da pausa entre lotes (em segundos). Simula comportamento humano.</small>
                       </div>
                       <div>
                         <div class="input-label">Pausa máx. (s)</div>
                         <input id="cfg-break-max" class="input-field" type="number" value="300" min="30" />
+                        <small class="wizard-help">Tempo máximo da pausa entre lotes. O sistema sorteia um valor entre pausa mín. e máx.</small>
                       </div>
                     </div>
                   </div>
@@ -444,7 +459,7 @@
                 </div>
 
                 <div class="card-footer">
-                  <div class="footer-left">Use essa visão para agir rápido nos não enviados.</div>
+                  <div class="footer-left">Use essa visão para corrigir falhas e reenviar.</div>
                   <div class="footer-right">
                     <button class="btn btn-ghost" id="btn-export-dashboard" title="Exportar resultados como texto">
                       <span class="btn-icon-inline">📋</span> Exportar

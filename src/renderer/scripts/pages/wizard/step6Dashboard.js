@@ -47,11 +47,86 @@
 
     if (status === 'SENT') return '<span class="badge success">Enviado</span>';
     if (status === 'FAILED') return '<span class="badge error">Falhou</span>';
-    if (status === 'RETRY') return '<span class="badge warn">Retry</span>';
+    if (status === 'RETRY') return '<span class="badge warn">Reenvio</span>';
     if (status === 'PROCESSING') return '<span class="badge warn">Enviando</span>';
     if (status === 'PENDING') return '<span class="badge">Pendente</span>';
 
     return `<span class="badge">${esc(status || '—')}</span>`;
+  }
+
+  function showRetryPhoneDialog(itemId, seller, contact) {
+    const existing = document.getElementById('retry-phone-dialog');
+    if (existing) existing.remove();
+
+    const dialog = document.createElement('div');
+    dialog.id = 'retry-phone-dialog';
+    dialog.className = 'retry-phone-overlay';
+    dialog.innerHTML = `
+      <div class="retry-phone-dialog glass">
+        <h3>🔧 Corrigir contato para reenvio</h3>
+        <p>Vendedor: <strong>${esc(seller)}</strong></p>
+        <p>Contato: <strong>${esc(contact)}</strong></p>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="input-label">Novo telefone (WhatsApp)</label>
+          <input type="text" class="input-field" id="retry-phone-input" placeholder="5511999999999" />
+        </div>
+        <div class="retry-phone-actions">
+          <button class="btn btn-ghost" id="retry-phone-cancel">Cancelar</button>
+          <button class="btn btn-primary" id="retry-phone-save">Salvar e Reenviar</button>
+        </div>
+      </div>
+    `;
+
+    step6Content.appendChild(dialog);
+
+    document.getElementById('retry-phone-cancel').addEventListener('click', () => {
+      dialog.remove();
+    });
+
+    document.getElementById('retry-phone-save').addEventListener('click', async () => {
+      const phoneInput = document.getElementById('retry-phone-input');
+      const phone = phoneInput?.value?.trim();
+      if (!phone) {
+        showToast('warn', 'Informe o telefone para reenvio.');
+        return;
+      }
+
+      try {
+        // Update contact phone if possible
+        if (contact) {
+          const contactsApi = window.api?.contacts;
+          if (contactsApi) {
+            const allRes = await contactsApi.getAll();
+            const found = (allRes?.data || []).find(
+              (c) => {
+                // Prioritize exact name match
+                if (c.display_name === contact) return true;
+                // Fallback: match by seller alias only if name also matches
+                if (seller && Array.isArray(c.aliases) && c.aliases.includes(seller) && c.display_name === contact) return true;
+                return false;
+              }
+            );
+            if (found) {
+              await contactsApi.update(found.id, { phone });
+            }
+          }
+        }
+
+        // Trigger retry
+        const state = window.wizardState || {};
+        const status = await window.api.dispatch.getStatus();
+        const jobId = status?.activeJobId || state.dispatchJobId;
+        if (jobId) {
+          await window.api.dispatch.retryFailed(jobId);
+          showToast('success', 'Telefone atualizado. Reenvio solicitado.');
+        }
+
+        dialog.remove();
+        refresh();
+      } catch (err) {
+        showToast('error', err?.message || 'Falha ao atualizar contato.');
+      }
+    });
   }
 
   function renderSummaryText(status, summary) {
@@ -65,7 +140,17 @@
 
     const completion = total > 0 ? Math.round((sent / total) * 100) : 0;
 
-    return `Status: ${status || '—'} • Progresso: ${completion}% • Total: ${total} • Enviados: ${sent} • Falhas: ${failed} • Pendente: ${pending} • Processando: ${processing} • Retry: ${retry} • Ignorados: ${skipped}`;
+    const statusLabels = {
+      'RUNNING': 'Em execução',
+      'COMPLETED': 'Concluído',
+      'PAUSED': 'Pausado',
+      'STOPPED': 'Parado',
+      'ERROR': 'Erro',
+      'IDLE': 'Aguardando',
+    };
+    const statusLabel = statusLabels[String(status || '').toUpperCase()] || status || '—';
+
+    return `Estado: ${statusLabel} • Progresso: ${completion}% • Total: ${total} • Enviados: ${sent} • Falhas: ${failed} • Pendentes: ${pending} • Processando: ${processing} • Reenvio: ${retry} • Ignorados: ${skipped}`;
   }
 
   function renderTable(items = []) {
@@ -103,6 +188,7 @@
       const detailRaw = item.last_error_message || item.last_attempt_error || '—';
       const detail = esc(detailRaw);
       const rowClass = idx % 2 === 0 ? 'dash-row-even' : 'dash-row-odd';
+      const isFailed = String(item.status || '').toUpperCase() === 'FAILED';
 
       return `
         <tr class="${rowClass}">
@@ -110,12 +196,24 @@
           <td>${esc(formatPhone(item.phone_e164))}</td>
           <td>${esc(item.seller_name_raw || '—')}</td>
           <td>${getStatusBadge(item.status)}</td>
-          <td class="dash-cell-detail" title="${detail}">${detail}</td>
+          <td class="dash-cell-detail" title="${detail}">
+            ${detail}
+            ${isFailed ? `<button class="btn btn-ghost btn-sm btn-retry-item" data-item-id="${esc(String(item.id || ''))}" data-seller="${esc(item.seller_name_raw || '')}" data-contact="${esc(item.display_name || '')}">🔧 Corrigir</button>` : ''}
+          </td>
         </tr>
       `;
     }).join('');
 
     tableEl.innerHTML = `${head}<tbody>${rows}</tbody>`;
+
+    // Bind retry buttons for failed items
+    tableEl.querySelectorAll('.btn-retry-item').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const seller = btn.dataset.seller;
+        const contact = btn.dataset.contact;
+        showRetryPhoneDialog(btn.dataset.itemId, seller, contact);
+      });
+    });
   }
 
   function exportDashboard() {

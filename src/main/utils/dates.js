@@ -32,6 +32,15 @@ function parseDateBrToIso(value) {
   let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (m) return toIso(m[3], m[2], m[1]);
 
+  // dd/mm/yy (2-digit year)
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);
+  if (m) {
+    const yy = Number(m[3]);
+    // Century pivot: years >= 50 are 1900s, < 50 are 2000s
+    const fullYear = yy >= 50 ? 1900 + yy : 2000 + yy;
+    return toIso(fullYear, m[2], m[1]);
+  }
+
   // yyyy-mm-dd or yyyy-mm-ddTHH:mm...
   m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m) return toIso(m[1], m[2], m[3]);

@@ -4,6 +4,21 @@
   const step3Content = document.getElementById('step3-content');
   if (!step3Content) return;
 
+  const MONTH_NAMES_PT = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+  ];
+
+  function formatPeriodLabelLocal(periodRef) {
+    if (!periodRef) return '';
+    const m = String(periodRef).match(/^(\d{4})-(\d{2})$/);
+    if (!m) return periodRef;
+    const year = m[1];
+    const monthIdx = Number(m[2]) - 1;
+    const monthName = MONTH_NAMES_PT[monthIdx] || m[2];
+    return `${monthName} de ${year}`;
+  }
+
   const fmtPdf = document.getElementById('cfg-fmt-pdf');
   const fmtPng = document.getElementById('cfg-fmt-png');
   const msgTemplate = document.getElementById('cfg-message-template');
@@ -50,7 +65,9 @@
     for (let i = 0; i < 4; i++) {
       let msg = processSpintext(template);
       msg = msg.replace(/\{vendedor\}/gi, 'João Silva');
-      msg = msg.replace(/\{periodo\}/gi, '2026-02');
+      const periodRef = window.wizardState?.periodRef || '2026-02';
+      const periodLabel = formatPeriodLabelLocal(periodRef);
+      msg = msg.replace(/\{periodo\}/gi, periodLabel);
       samples.push(msg);
     }
 
@@ -80,7 +97,7 @@
         png: !!fmtPng?.checked,
       },
       mode: 'PROD',
-      messageTemplate: String(msgTemplate?.value || '').trim() || '{Oi|Olá|Oii} {vendedor}, segue seu relatório de bonificações do período {periodo}.',
+      messageTemplate: String(msgTemplate?.value || '').trim() || '{Oi|Olá|Oii} {vendedor}, {segue seu relatório de bonificações|aqui está o relatório de bonificações|te envio o relatório de bonificações} do período de {periodo}.',
       antiBan: {
         minDelaySec: Number(delayMin?.value || 8),
         maxDelaySec: Number(delayMax?.value || 15),

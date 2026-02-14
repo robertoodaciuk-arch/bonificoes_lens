@@ -59,8 +59,36 @@
       .replace(/'/g, '&#39;');
   }
 
+  function renderMatchedActions(container, sellerRaw, matchData) {
+    container.innerHTML = '';
+
+    const badge = document.createElement('div');
+    badge.className = 'match-status-badge';
+    badge.textContent = `✅ ${matchData.contactName}`;
+    container.appendChild(badge);
+
+    const note = document.createElement('div');
+    note.className = 'match-status-note';
+    note.textContent = `(${matchData.type})`;
+    container.appendChild(note);
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn btn-ghost btn-sm';
+    editBtn.textContent = '✏️ Editar';
+    editBtn.title = 'Alterar associação deste vendedor';
+    editBtn.addEventListener('click', () => {
+      renderUnmatchedActions(container, sellerRaw);
+      const row = container.closest('.match-row');
+      if (row) row.classList.add('unmatched');
+    });
+    container.appendChild(editBtn);
+  }
+
   function renderUnmatchedActions(container, sellerRaw) {
     container.innerHTML = '';
+
+    const actionsWrap = document.createElement('div');
+    actionsWrap.className = 'match-actions-wrap';
 
     const select = document.createElement('select');
     select.className = 'match-select';
@@ -81,12 +109,120 @@
       const value = select.value;
       if (row) row.dataset.action = value;
 
-      if (value === 'NEW') pendingChanges.set(sellerRaw, { action: 'NEW' });
-      else if (value === 'IGNORE') pendingChanges.set(sellerRaw, { action: 'IGNORE' });
-      else pendingChanges.set(sellerRaw, { action: 'LINK', targetId: value });
+      if (value === 'NEW') {
+        pendingChanges.set(sellerRaw, { action: 'NEW' });
+        createBtn.classList.remove('hidden');
+      } else if (value === 'IGNORE') {
+        pendingChanges.set(sellerRaw, { action: 'IGNORE' });
+        createBtn.classList.add('hidden');
+      } else {
+        pendingChanges.set(sellerRaw, { action: 'LINK', targetId: value });
+        createBtn.classList.add('hidden');
+      }
     });
 
-    container.appendChild(select);
+    actionsWrap.appendChild(select);
+
+    // Inline create contact button
+    const createBtn = document.createElement('button');
+    createBtn.className = 'btn btn-ghost btn-sm';
+    createBtn.innerHTML = '➕ Criar contato';
+    createBtn.title = 'Criar contato para este vendedor com telefone';
+    createBtn.addEventListener('click', () => {
+      showInlineCreateContact(container, sellerRaw);
+    });
+    actionsWrap.appendChild(createBtn);
+
+    container.appendChild(actionsWrap);
+  }
+
+  function showInlineCreateContact(container, sellerRaw) {
+    const row = container.closest('.match-row');
+    let inlineForm = row?.querySelector('.inline-create-form');
+    if (inlineForm) {
+      inlineForm.classList.toggle('hidden');
+      return;
+    }
+
+    inlineForm = document.createElement('div');
+    inlineForm.className = 'inline-create-form';
+    inlineForm.innerHTML = `
+      <div class="inline-form-row">
+        <div class="inline-form-field">
+          <label class="input-label">Nome</label>
+          <input type="text" class="input-field input-sm" value="${esc(sellerRaw)}" data-field="name" />
+        </div>
+        <div class="inline-form-field">
+          <label class="input-label">Telefone (WhatsApp)</label>
+          <input type="text" class="input-field input-sm" placeholder="5511999999999" data-field="phone" />
+        </div>
+        <button class="btn btn-primary btn-sm inline-create-save">Salvar</button>
+        <button class="btn btn-ghost btn-sm inline-create-cancel">Cancelar</button>
+      </div>
+    `;
+
+    const saveBtn = inlineForm.querySelector('.inline-create-save');
+    const cancelBtn = inlineForm.querySelector('.inline-create-cancel');
+
+    saveBtn.addEventListener('click', async () => {
+      const nameInput = inlineForm.querySelector('[data-field="name"]');
+      const phoneInput = inlineForm.querySelector('[data-field="phone"]');
+      const name = nameInput?.value?.trim();
+      const phone = phoneInput?.value?.trim();
+
+      if (!name) {
+        showToast('warn', 'Informe o nome do contato.');
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Salvando…';
+
+      try {
+        const created = await contacts.create({
+          displayName: name,
+          phone: phone || undefined,
+          aliases: [sellerRaw],
+          active: true,
+        });
+
+        if (created?.ok && created?.data?.id) {
+          const seller = currentSellers.find((s) => s.sellerNameRaw === sellerRaw);
+          if (seller?.reportId) {
+            await contacts.linkReport(seller.reportId, created.data.id);
+          }
+          pendingChanges.delete(sellerRaw);
+
+          // Update the row to show matched status
+          const actionDiv = container;
+          renderMatchedActions(actionDiv, sellerRaw, {
+            contactName: name,
+            type: 'criado agora',
+          });
+          inlineForm.remove();
+
+          if (row) row.classList.remove('unmatched');
+
+          // Refresh contacts list
+          const contactsRes = await contacts.getAll();
+          if (contactsRes?.ok) allContacts = contactsRes.data || [];
+
+          showToast('success', `Contato "${name}" criado com sucesso.`);
+        } else {
+          throw new Error(created?.error?.message || 'Falha ao criar contato.');
+        }
+      } catch (err) {
+        showToast('error', err?.message || 'Erro ao criar contato.');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Salvar';
+      }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      inlineForm.remove();
+    });
+
+    row?.appendChild(inlineForm);
   }
 
   async function initStep2({ sellers, importId } = {}) {
@@ -154,10 +290,7 @@
         if (!actionDiv) continue;
 
         if (match) {
-          actionDiv.innerHTML = `
-            <div class="match-status-badge">✅ ${esc(match.contactName)}</div>
-            <div class="match-status-note">(${esc(match.type)})</div>
-          `;
+          renderMatchedActions(actionDiv, seller.sellerNameRaw, match);
 
           if (seller.reportId) {
             contacts.linkReport(seller.reportId, match.contactId).catch(() => {});
@@ -178,6 +311,16 @@
     }
 
     renderSummary(currentSellers.length, unmatchedCount);
+
+    // Update subtitle dynamically
+    const subtitleEl = document.getElementById('step2-subtitle');
+    if (subtitleEl) {
+      if (unmatchedCount === 0) {
+        subtitleEl.textContent = 'Todos os vendedores foram identificados. Você pode ajustar as associações se necessário.';
+      } else {
+        subtitleEl.textContent = `${unmatchedCount} vendedor(es) não identificado(s). Associe-os ou crie novos contatos.`;
+      }
+    }
 
     if (unmatchedCount === 0) {
       btnFinish.textContent = 'Continuar';

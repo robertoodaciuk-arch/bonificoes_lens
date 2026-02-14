@@ -31,6 +31,12 @@
     return String(value);
   }
 
+  function getColumnDisplayName(col) {
+    const normalized = normalizeCol(col);
+    if (normalized === 'AC') return 'BONIFICAÇÃO';
+    return col;
+  }
+
   function getOrderedColumns(columns = []) {
     const clean = columns.filter((c) => c && !String(c).startsWith('__'));
 
@@ -62,7 +68,7 @@
 
   function getCellClass(colName) {
     const normalized = normalizeCol(colName);
-    if (normalized === 'VENDA' || normalized === 'AC' || normalized.includes('VALOR')) {
+    if (normalized === 'VENDA' || normalized === 'AC' || normalized === 'BONIFICACAO' || normalized.includes('VALOR')) {
       return 'cell-number cell-money';
     }
     if (normalized.includes('TOTAL') || normalized.includes('QTD') || normalized.includes('QUANT')) {
@@ -71,13 +77,64 @@
     return '';
   }
 
+  // Valid Excel serial date range (approx. 1902 to 2447)
+  const MIN_EXCEL_SERIAL = 1000;
+  const MAX_EXCEL_SERIAL = 200000;
+  // Century pivot: years >= 50 are 1900s, < 50 are 2000s
+  const YEAR_2DIGIT_PIVOT = 50;
+
+  function excelSerialToBrDate(serial) {
+    if (!Number.isFinite(serial)) return String(serial);
+    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+    const utcMs = excelEpoch.getTime() + Math.round(serial) * 86400000;
+    const date = new Date(utcMs);
+    if (Number.isNaN(date.getTime())) return String(serial);
+    const d = String(date.getUTCDate()).padStart(2, '0');
+    const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const y = date.getUTCFullYear();
+    return `${d}/${m}/${y}`;
+  }
+
+  function formatDateBr(value) {
+    if (value === null || value === undefined || value === '') return '';
+
+    // Already in DD/MM/YYYY or DD/MM/YY format
+    if (typeof value === 'string') {
+      const brMatch = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+      if (brMatch) return value;
+
+      // ISO format yyyy-mm-dd
+      const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+    }
+
+    // Excel serial number
+    if (typeof value === 'number' && value > MIN_EXCEL_SERIAL && value < MAX_EXCEL_SERIAL) {
+      return excelSerialToBrDate(value);
+    }
+
+    // String that looks like a number (Excel serial)
+    if (typeof value === 'string') {
+      const asNum = Number(value.replace(',', '.'));
+      if (Number.isFinite(asNum) && asNum > MIN_EXCEL_SERIAL && asNum < MAX_EXCEL_SERIAL) {
+        return excelSerialToBrDate(asNum);
+      }
+    }
+
+    return String(value);
+  }
+
   function getCellValue(colName, rawValue) {
     const normalized = normalizeCol(colName);
 
     if (rawValue === null || rawValue === undefined) return '';
 
-    if (normalized === 'VENDA' || normalized === 'AC' || normalized.includes('VALOR')) {
+    if (normalized === 'VENDA' || normalized === 'AC' || normalized === 'BONIFICACAO' || normalized.includes('VALOR')) {
       return formatMoney(rawValue);
+    }
+
+    if (normalized === 'DATA VENDA' || normalized === 'DATA' || normalized.includes('DATA')) {
+      return formatDateBr(rawValue);
     }
 
     return String(rawValue);
@@ -172,7 +229,8 @@
     if (!container) return;
 
     const orderedCols = getOrderedColumns(columns);
-    const visibleRows = Array.isArray(rows) ? rows.slice(0, 120) : [];
+    const MAX_VISIBLE = 200;
+    const visibleRows = Array.isArray(rows) ? rows.slice(0, MAX_VISIBLE) : [];
 
     if (!orderedCols.length || !visibleRows.length) {
       container.innerHTML = '<div class="table-empty-state">Sem dados para exibir no preview.</div>';
@@ -180,18 +238,20 @@
     }
 
     const head = orderedCols
-      .map((col) => `<th>${escapeHtml(col)}</th>`)
+      .map((col) => `<th>${escapeHtml(getColumnDisplayName(col))}</th>`)
       .join('');
 
-    const body = visibleRows.map((row, idx) => {
+    const bodyParts = [];
+    for (let idx = 0; idx < visibleRows.length; idx++) {
+      const row = visibleRows[idx];
       const cells = orderedCols.map((col) => {
         const cls = getCellClass(col);
         const value = getCellValue(col, row[col]);
         return `<td class="${cls}">${escapeHtml(value)}</td>`;
       }).join('');
-
-      return `<tr><td class="cell-index">${idx + 1}</td>${cells}</tr>`;
-    }).join('');
+      bodyParts.push(`<tr><td class="cell-index">${idx + 1}</td>${cells}</tr>`);
+    }
+    const body = bodyParts.join('');
 
     const previewInfo = rows.length > visibleRows.length
       ? `<div class="table-empty-state" style="text-align:left; padding:8px 12px; border-bottom:1px solid var(--border-subtle); color:var(--text-muted);">Mostrando ${visibleRows.length} de ${rows.length} linhas do preview.</div>`
