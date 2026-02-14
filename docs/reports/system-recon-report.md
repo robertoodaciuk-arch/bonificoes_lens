@@ -1,7 +1,7 @@
 # Reconhecimento Técnico — Operação Apple Transformation
 
 ## Resumo
-- Arquivos analisados (sem node_modules/.git): 77
+- Arquivos analisados (sem node_modules/.git): 78
 - Produto: Bonificações WhatsApp
 - Versão: 0.1.0
 
@@ -17,8 +17,8 @@
 - .css: 8
 - .md: 4
 - .json: 3
+- .sql: 3
 - [sem extensão]: 2
-- .sql: 2
 - .html: 2
 - .example: 1
 - .svg: 1
